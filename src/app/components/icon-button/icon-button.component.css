@@ -1,0 +1,28 @@
+/* sizing */
+/* styles */
+button {
+  margin-left: 2em;
+  height: 100%;
+  padding: 1em;
+  border-radius: 100%;
+  border: none;
+  outline: none;
+  transition: 0.2s;
+}
+button img {
+  float: top;
+  height: 100%;
+}
+@media (min-width: 700px) {
+  button:hover {
+    cursor: pointer;
+    filter: brightness(70%);
+  }
+}
+@media (max-width: 700px) {
+  button {
+    margin: 0 1em;
+  }
+}
+
+/*# sourceMappingURL=icon-button.component.css.map */

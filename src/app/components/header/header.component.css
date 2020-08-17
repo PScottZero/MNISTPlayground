@@ -1,0 +1,40 @@
+/* sizing */
+header {
+  position: relative;
+  box-sizing: border-box;
+  height: 6em;
+  padding: 1em;
+}
+header img {
+  float: left;
+}
+@media (min-width: 700px) {
+  header img {
+    height: 100%;
+  }
+}
+@media (max-width: 700px) {
+  header img {
+    height: 100%;
+    width: 60%;
+  }
+}
+
+@media (min-width: 700px) {
+  nav {
+    float: right;
+    height: 100%;
+  }
+}
+@media (max-width: 700px) {
+  nav {
+    position: absolute;
+    height: 3em;
+    width: calc(100% - 2em);
+    top: 5em;
+    text-align: center;
+    margin: 0;
+  }
+}
+
+/*# sourceMappingURL=header.component.css.map */
