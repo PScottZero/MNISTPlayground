@@ -9,13 +9,13 @@ export class Neuron {
   activationValue: math.Number;
 
   constructor(weightCount: math.Number, activation: math.Number) {
-    this.weights = Array.from({length: weightCount}, () => math.random());
+    this.weights = Array.from({length: weightCount}, () => math.random(-10, 10));
     this.bias = math.random();
     this.activation = activation;
   }
 
   calculateValue(prevNeurons: Neuron[]): void {
-    const prevActivations = prevNeurons.slice().map(neuron => neuron.value);
+    const prevActivations = prevNeurons.slice().map(neuron => neuron.activationValue);
     this.value = math.add(math.multiply(this.weights, prevActivations), this.bias);
   }
 
