@@ -1,214 +1,147 @@
 import {Injectable} from '@angular/core';
-import {Neuron} from '../classes/Neuron';
-import * as math from 'mathjs';
-import {ActivationFunction, FunctionMode, RELU, SIGMOID} from '../classes/ActivationFunction';
+import {FunctionMode, RELU, SOFTMAX} from '../classes/ActivationFunction';
 import {HttpClient} from '@angular/common/http';
-import {NeuronDeriv} from '../classes/NeuronDeriv';
+import * as math from 'mathjs';
+import {MNISTData} from '../classes/MNISTData';
+import {Gradient} from '../classes/Gradient';
+import {NeuralNetwork} from '../classes/NeuralNetwork';
 
 const INPUT_SIZE = 784;
 const OUTPUT_SIZE = 10;
-const DEFAULT_SIZE = [16, 16];
-const DEFAULT_ACTIVATION = [RELU, RELU];
+const DEFAULT_SIZE = [INPUT_SIZE, 16, 16, OUTPUT_SIZE];
+const DEFAULT_ACTIVATION = [undefined, RELU, RELU, SOFTMAX];
+const DEFAULT_EPOCH_COUNT = 3;
+const DEFAULT_MINI_BATCH_SIZE = 100;
 
 @Injectable({
   providedIn: 'root'
 })
 export class NeuralNetworkService {
-  layers: Neuron[][];
-  gradients: NeuronDeriv[][][];
+  network: NeuralNetwork;
+  miniBatchGradient: Gradient;
   expectedValue: math.Number[];
-  activationDeriv: math.Number[];
 
   miniBatchSize: number;
   epochCount: number;
-  totalCorrect: math.Number;
 
   constructor(private http: HttpClient) {
-    this.configureNetwork(DEFAULT_SIZE, DEFAULT_ACTIVATION);
-    this.epochCount = 1;
-    this.miniBatchSize = 128;
-    this.totalCorrect = 0;
-    this.gradients = [];
+    this.network = new NeuralNetwork(DEFAULT_SIZE, DEFAULT_ACTIVATION);
+    this.configureTraining(DEFAULT_EPOCH_COUNT, DEFAULT_MINI_BATCH_SIZE);
     this.trainNetwork();
   }
 
-  configureNetwork(layerSizes: number[], layerActivations: ActivationFunction[]): void {
-    this.layers = [Array<Neuron>(INPUT_SIZE)
-      .fill(undefined).map(() => new Neuron(0, undefined))];
-    let prevSize = INPUT_SIZE;
-    for (let i = 0; i < layerSizes.length; i++) {
-      this.layers.push(Array<Neuron>(layerSizes[i])
-        .fill(undefined).map(() => new Neuron(prevSize, layerActivations[i])));
-      prevSize = layerSizes[i];
+  configureTraining(epochCount: number, miniBatchSize: number): void {
+    this.miniBatchGradient = new Gradient(this.network.getSize());
+    this.epochCount = epochCount;
+    this.miniBatchSize = miniBatchSize;
+  }
+
+  parseCSV(csvText: string): MNISTData {
+    const data = new MNISTData();
+    const lines = csvText.split('\n');
+    for (const line of lines) {
+      const imageData = line.split(',').map(entry => +entry);
+      const label = Array<math.Number>(10).fill(0);
+      label[imageData[0]] = 1;
+      imageData.shift();
+      data.imageData.push(imageData);
+      data.labels.push(label);
     }
-    this.layers.push(Array<Neuron>(OUTPUT_SIZE)
-      .fill(undefined).map(() => new Neuron(prevSize, SIGMOID)));
+    return data;
   }
 
   trainNetwork(): void {
     this.http.get('assets/mnist/reduced_mnist_train.csv', {responseType: 'text'})
       .subscribe(response => {
-        let data = this.parseCSV(response);
-        let trainX = data[0];
-        let trainY = data[1];
-
+        const trainingData = this.parseCSV(response);
         for (let epoch = 0; epoch < this.epochCount; epoch++) {
-          console.log('Epoch ' + epoch);
-          data = this.shuffleData(trainX, trainY);
-          trainX = data[0];
-          trainY = data[1];
-          for (let i = 0; i < trainX.length; i++) {
-            if ((i + 1) % this.miniBatchSize === 0 || i === trainX.length - 1) {
-              const accuracy = math.round(math.multiply(math.divide(this.totalCorrect, this.miniBatchSize), 100), 2);
-              console.log('* Mini-batch ' + (((i + 1) / this.miniBatchSize)) + ' accuracy ' + accuracy + '%');
-              this.updateWeights();
-              this.gradients = [];
-              this.totalCorrect = 0;
+          console.log('Epoch ' + (epoch + 1));
+          trainingData.shuffle();
+          let miniBatchCorrect = 0;
+          for (let i = 0; i < trainingData.imageData.length; i++) {
+            this.network.runNetwork(trainingData.imageData[i]);
+            this.expectedValue = trainingData.labels[i];
+            miniBatchCorrect += (this.checkCorrect(trainingData.labels[i].indexOf(1))) ? 1 : 0;
+            this.calculateGradient();
+            if ((i + 1) % this.miniBatchSize === 0 || i === trainingData.imageData.length - 1) {
+              const accuracy = math.round(math.multiply(math.divide(miniBatchCorrect, this.miniBatchSize), 100), 2);
+              console.log('* Mini-batch ' + (math.ceil(((i + 1) / this.miniBatchSize))) + ' accuracy ' + accuracy + '%');
+              this.updateWeights(math.divide(miniBatchCorrect, this.miniBatchSize));
+              this.miniBatchGradient = new Gradient(this.network.getSize());
+              miniBatchCorrect = 0;
             }
-            this.runNetwork(trainX[i]);
-            this.expectedValue = trainY[i];
-            this.checkCorrect(trainY[i].indexOf(1));
-            this.gradients.push(this.calculateGradient());
           }
         }
+        this.testNetwork();
       }
     );
   }
 
-  checkCorrect(expectedValueIndex: number): void {
-    let maxIndex = 0;
-    let maxValue = -1;
-    let index = 0;
-    for (const neuron of this.layers[this.layers.length - 1]) {
-      if (neuron.activationValue > maxValue) {
-        maxValue = neuron.activationValue;
-        maxIndex = index;
-      }
-      index += 1;
-    }
-    if (maxIndex === expectedValueIndex) {
-      this.totalCorrect += 1;
-    }
-  }
-
-  shuffleData(dataX: math.Number[][], dataY: math.Number[][]): math.Number[][][] {
-    const shuffledDataX = [];
-    const shuffledDataY = [];
-    while (dataX.length > 0) {
-      const randIndex = math.randomInt(0, dataX.length - 1);
-      shuffledDataX.push(dataX[randIndex]);
-      shuffledDataY.push(dataY[randIndex]);
-      dataX.splice(randIndex, 1);
-      dataY.splice(randIndex, 1);
-    }
-    return [shuffledDataX, shuffledDataY];
-  }
-
-  runNetwork(imageData: math.Number[]): void {
-     for (let px = 0; px < imageData.length; px++) {
-       this.layers[0][px].activationValue = math.divide(imageData[px], 255);
-     }
-     for (let layerNo = 1; layerNo < this.layers.length; layerNo++) {
-       for (const neuron of this.layers[layerNo]) {
-         neuron.calculateActivationValue(this.layers[layerNo - 1]);
-       }
-     }
-  }
-
-  parseCSV(csvText: string): math.Number[][][] {
-    const dataX = [];
-    const dataY = [];
-    const lines = csvText.split('\n');
-    for (const line of lines) {
-      const data = line.split(',').map(entry => +entry);
-      const label = Array<math.Number>(10).fill(0);
-      label[data[0]] = 1;
-      data.shift();
-      dataX.push(data);
-      dataY.push(label);
-    }
-    return [dataX, dataY];
-  }
-
-  createEmptyNeuronDerivArray(): NeuronDeriv[][] {
-    const neuronDeriv = [];
-    for (let i = 1; i < this.layers.length; i++) {
-      neuronDeriv.push(Array<NeuronDeriv>(this.layers[i].length).fill(undefined).map(() => new NeuronDeriv()));
-    }
-    return neuronDeriv;
-  }
-
-  updateWeights(): void {
-    const avgGrad = this.getAverageGradient();
-    const eta = 0.01;
-    for (let i = 1; i < this.layers.length; i++) {
-      for (let j = 0; j < this.layers[i].length; j++) {
-        this.layers[i][j].adjustWeights(avgGrad[i - 1][j].weightDeriv, eta);
-        this.layers[i][j].adjustBias(avgGrad[i - 1][j].biasDeriv, eta);
-      }
-    }
-  }
-
-  getAverageGradient(): NeuronDeriv[][] {
-    const avgGrad = this.createEmptyNeuronDerivArray();
-    for (let i = 1; i < this.layers.length; i++) {
-      for (let j = 0; j < this.layers[i].length; j++) {
-        avgGrad[i - 1][j].weightDeriv = Array<math.Number>(this.layers[i - 1].length).fill(0);
-      }
-    }
-    for (const gradient of this.gradients) {
-      for (let i = 0; i < gradient.length; i++) {
-        for (let j = 0; j < gradient[i].length; j++) {
-          avgGrad[i][j].biasDeriv = math.add(avgGrad[i][j].biasDeriv,
-            math.divide(gradient[i][j].biasDeriv, gradient[i].length));
-          avgGrad[i][j].weightDeriv = math.add(avgGrad[i][j].weightDeriv,
-            math.divide(gradient[i][j].weightDeriv, gradient[i].length));
+  testNetwork(): void {
+    this.http.get('assets/mnist/reduced_mnist_test.csv', {responseType: 'text'})
+      .subscribe(response => {
+        const testingData = this.parseCSV(response);
+        let correct = 0;
+        for (let i = 0; i < testingData.imageData.length; i++) {
+          this.network.runNetwork(testingData.imageData[i]);
+          correct += (this.checkCorrect(testingData.labels[i].indexOf(1))) ? 1 : 0;
         }
+        console.log(math.multiply(math.divide(correct, 1000), 100));
       }
-    }
-    return avgGrad;
+    );
   }
 
-  calculateGradient(): NeuronDeriv[][] {
-    const gradient = this.createEmptyNeuronDerivArray();
-    for (let layerNo = this.layers.length - 1; layerNo > 0; layerNo--) {
-      this.activationDeriv = Array<math.Number>(this.layers[layerNo - 1].length).fill(0);
-      for (let neuronNo = 0; neuronNo < this.layers[layerNo].length; neuronNo++) {
-        const neuron = this.layers[layerNo][neuronNo];
-        const biasDeriv = this.getCostBiasDeriv(layerNo, neuronNo);
-        gradient[layerNo - 1][neuronNo].biasDeriv = biasDeriv;
+  checkCorrect(expectedValue: number): boolean {
+    const guess = Array.from(this.network.getOutputLayer(), neuron => neuron.activationValue);
+    return guess.indexOf(math.max(guess)) === expectedValue;
+  }
+
+  calculateGradient(): void {
+    const gradient = new Gradient(this.network.getSize(), this.network.getOutputLayer(), this.expectedValue);
+    for (let layerNo = this.network.getSize().length - 1; layerNo > 0; layerNo--) {
+      for (let neuronNo = 0; neuronNo < this.network.layers[layerNo].length; neuronNo++) {
+        const neuron = this.network.layers[layerNo][neuronNo];
+        const neuronDeriv = gradient.layers[layerNo][neuronNo];
+        const biasDeriv = this.getCostBiasDeriv(layerNo, neuronNo, gradient);
+        neuronDeriv.biasDeriv = biasDeriv;
         for (let weightNo = 0; weightNo < neuron.weights.length; weightNo++) {
-          gradient[layerNo - 1][neuronNo].weightDeriv.push(
-            this.getCostWeightDeriv(layerNo, neuronNo, weightNo, biasDeriv));
-          this.activationDeriv = math.add(this.activationDeriv,
-            this.getCostActivationDeriv(layerNo, neuronNo, weightNo, biasDeriv));
+          neuronDeriv.weightDeriv[weightNo] = this.getCostWeightDeriv(layerNo, weightNo, biasDeriv);
+          gradient.layers[layerNo - 1][weightNo].activationDeriv = math.add(
+            gradient.layers[layerNo - 1][weightNo].activationDeriv,
+            this.getCostActivationDeriv(layerNo, neuronNo, weightNo, biasDeriv)
+          );
         }
       }
     }
-    return gradient;
+    this.miniBatchGradient.add(gradient, this.miniBatchSize);
   }
 
-  getCostBiasDeriv(layer: number, currNeuron: number): math.Number {
-    const neuron = this.layers[layer][currNeuron];
-    return math.multiply(neuron.activation(neuron.value, FunctionMode.DERIV),
-      this.getPrevCostActivationDeriv(layer, currNeuron));
-  }
-
-  getCostWeightDeriv(layer: number, currNeuron: number, prevNeuron: number, costBiasDeriv: math.Number): math.Number {
-    return math.multiply(this.layers[layer - 1][prevNeuron].activationValue, costBiasDeriv);
-  }
-
-  getCostActivationDeriv(layer: number, currNeuron: number, prevNeuron: number, costBiasDeriv: math.Number): math.Number {
-    return math.multiply(this.layers[layer][currNeuron].weights[prevNeuron], costBiasDeriv);
-  }
-
-  getPrevCostActivationDeriv(layer: number, currNeuron): math.Number {
-    if (layer === this.layers.length - 1) {
-      return math.multiply(2, math.subtract(this.layers[layer][currNeuron].activationValue,
-        this.expectedValue[currNeuron]));
-    } else {
-      return this.activationDeriv[currNeuron];
+  updateWeights(accuracy: math.Number): void {
+    const eta = math.multiply(math.subtract(1, accuracy), 1);
+    for (let i = 1; i < this.network.layers.length; i++) {
+      for (let j = 0; j < this.network.layers[i].length; j++) {
+        this.network.layers[i][j].adjustWeights(this.miniBatchGradient.layers[i][j].weightDeriv, eta);
+        this.network.layers[i][j].adjustBias(this.miniBatchGradient.layers[i][j].biasDeriv, eta);
+      }
     }
+  }
+
+  getCostBiasDeriv(layerNo: number, neuronNo: number, gradient: Gradient): math.Number {
+    const neuron = this.network.layers[layerNo][neuronNo];
+    if (layerNo !== this.network.layers.length - 1) {
+      return math.multiply(neuron.activation(neuron.value, FunctionMode.DERIV),
+        gradient.layers[layerNo][neuronNo].activationDeriv);
+    } else {
+      return math.multiply(neuron.activation(neuron.value, FunctionMode.DERIV, this.network.getOutputLayerValues()),
+        gradient.layers[layerNo][neuronNo].activationDeriv);
+    }
+  }
+
+  getCostWeightDeriv(layerNo: number, weightNo: number, costBiasDeriv: math.Number): math.Number {
+    return math.multiply(this.network.layers[layerNo - 1][weightNo].activationValue, costBiasDeriv);
+  }
+
+  getCostActivationDeriv(layerNo: number, neuronNo: number, weightNo: number, costBiasDeriv: math.Number): math.Number {
+    return math.multiply(this.network.layers[layerNo][neuronNo].weights[weightNo], costBiasDeriv);
   }
 }
-

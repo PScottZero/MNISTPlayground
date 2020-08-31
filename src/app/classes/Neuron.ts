@@ -1,5 +1,5 @@
 import * as math from 'mathjs';
-import {ActivationFunction, FunctionMode} from './ActivationFunction';
+import {ActivationFunction, FunctionMode, SOFTMAX} from './ActivationFunction';
 
 export class Neuron {
   weights: math.Number[];
@@ -9,8 +9,8 @@ export class Neuron {
   activationValue: math.Number;
 
   constructor(weightCount: math.Number, activation: math.Number) {
-    this.weights = Array.from({length: weightCount}, () => math.random(0, 10));
-    this.bias = math.random();
+    this.weights = Array.from({length: weightCount}, () => math.random(0, 0.01));
+    this.bias = math.random(0, 0.01);
     this.activation = activation;
   }
 
@@ -29,6 +29,8 @@ export class Neuron {
 
   calculateActivationValue(prevNeurons: Neuron[]): void {
     this.calculateValue(prevNeurons);
-    this.activationValue = this.activation(this.value, FunctionMode.NORMAL);
+    if (this.activation !== SOFTMAX) {
+      this.activationValue = this.activation(this.value, FunctionMode.NORMAL);
+    }
   }
 }
