@@ -44,3 +44,5 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
+python/mnist_train.csv
+python/mnist_test.csv
