@@ -3,6 +3,7 @@ import {Layer} from '../classes/Layer';
 import {MnistService} from './mnist.service';
 import {math} from '../classes/mathjs';
 import {MNISTImage} from '../classes/MNISTImage';
+import {MessageService} from './message.service';
 
 const INPUT_SIZE = 784;
 const OUTPUT_SIZE = 10;
@@ -17,8 +18,12 @@ export class NeuralNetworkService {
   layers: Layer[];
   epochCount: number;
   eta: number;
+  isTraining: boolean;
+  totalCompleted: number;
 
-  constructor(private mnistService: MnistService) {
+  constructor(private mnistService: MnistService, private messageService: MessageService) {
+    this.isTraining = false;
+    this.totalCompleted = 0;
     this.configureNetwork(DEFAULT_SIZE);
     this.configureTraining(DEFAULT_EPOCH_COUNT, DEFAULT_LEARNING_RATE);
   }
@@ -42,23 +47,53 @@ export class NeuralNetworkService {
     this.eta = eta;
   }
 
-  trainNetwork(): void {
+  async trainNetwork(): Promise<void> {
     for (let epochNo = 0; epochNo < this.epochCount; epochNo++) {
       this.mnistService.shuffle();
+      let completed = 0;
       let correct = 0;
       for (const image of this.mnistService.trainData) {
         this.forwardPropagation(image);
         correct += (this.checkCorrect(image)) ? 1 : 0;
         this.backPropagation(image);
         this.updateNetwork();
+        completed++;
+        this.totalCompleted++;
+        if (completed % 20 === 0) {
+          await this.delay(16);
+        }
+        const accuracy = math.round((correct / this.mnistService.trainData.length) * 100, 2);
+        this.messageService.setEpochMessage(epochNo + 1, accuracy,
+          completed, this.mnistService.trainData.length);
       }
-      console.log('Epoch', epochNo, 'accuracy:', correct / this.mnistService.trainData.length);
     }
   }
 
+  testNetwork(): void {
+    let correct = 0;
+    let completed = 0;
+    for (const image of this.mnistService.testData) {
+      this.forwardPropagation(image);
+      correct += this.checkCorrect(image) ? 1 : 0;
+      completed++;
+      this.totalCompleted++;
+      const accuracy = math.round((correct / this.mnistService.testData.length) * 100, 2);
+      this.messageService.setTrainingMessage(accuracy, completed, this.mnistService.testData.length);
+    }
+  }
+
+  getProgress(): number {
+    const total = (this.mnistService.trainData.length * this.epochCount) + this.mnistService.testData.length;
+    return (this.totalCompleted / total) * 100;
+  }
+
+  delay(ms: number): any {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
   checkCorrect(image: MNISTImage): boolean {
-    const maxVal = math.max(this.layers[this.layers.length - 1].activValues);
-    return image.getLabel() === this.layers[this.layers.length - 1].activValues.indexOf(maxVal);
+    const outerLayer = this.layers[this.layers.length - 1].activValues;
+    return image.getLabel() === outerLayer.indexOf(math.max(outerLayer));
   }
 
   forwardPropagation(image: MNISTImage): void {

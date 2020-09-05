@@ -2,7 +2,7 @@ export class MNISTImage {
   imageData: number[];
 
   constructor(imageData: string[]) {
-    this.imageData = Array.from(imageData, data => +data / 255);
+    this.imageData = Array.from(imageData, data => +data);
   }
 
   getImage(): number[] {
