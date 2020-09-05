@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import {NeuralNetworkService} from '../../services/neural-network.service';
 
 @Component({
@@ -6,11 +6,11 @@ import {NeuralNetworkService} from '../../services/neural-network.service';
   templateUrl: './network.component.html',
   styleUrls: ['./network.component.scss']
 })
-export class NetworkComponent implements OnInit {
+export class NetworkComponent {
 
   constructor(private neuralNetworkService: NeuralNetworkService) { }
 
-  ngOnInit(): void {
+  trainNetwork(): void {
+    this.neuralNetworkService.trainNetwork();
   }
-
 }
