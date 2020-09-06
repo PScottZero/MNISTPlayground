@@ -1,5 +1,7 @@
 /* sizing */
 $mobile-cutoff: 700px;
-$gradient-start: #15c1ff;
-$gradient-middle: #0ad5b8;
-$gradient-end: #00e971;
+
+/* colors */
+$gradient: linear-gradient(to right, #15c1ff, #00e971);
+$gradient-red: linear-gradient(to right, red, orange);
+$color-inactive: lightgray;

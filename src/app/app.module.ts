@@ -5,13 +5,14 @@ import {MatProgressBarModule} from '@angular/material/progress-bar';
 
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './components/header/header.component';
-import {IconButtonComponent} from './components/icon-button/icon-button.component';
+import {IconButtonComponent} from './components/buttons/icon-button/icon-button.component';
 import { NetworkComponent } from './components/network/network.component';
-import { TrainToolComponent } from './components/train-tool/train-tool.component';
+import { TrainToolComponent } from './components/tools/train-tool/train-tool.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ToolbarComponent } from './components/toolbar/toolbar.component';
-import { NetworkConfigToolComponent } from './components/network-config-tool/network-config-tool.component';
-import { DrawToolComponent } from './components/draw-tool/draw-tool.component';
+import { NetworkConfigToolComponent } from './components/tools/network-config-tool/network-config-tool.component';
+import { DrawToolComponent } from './components/tools/draw-tool/draw-tool.component';
+import { RoundedButtonComponent } from './components/buttons/rounded-button/rounded-button.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { DrawToolComponent } from './components/draw-tool/draw-tool.component';
     TrainToolComponent,
     ToolbarComponent,
     NetworkConfigToolComponent,
-    DrawToolComponent
+    DrawToolComponent,
+    RoundedButtonComponent
   ],
   imports: [
     BrowserModule,

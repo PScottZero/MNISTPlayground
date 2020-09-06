@@ -1,3 +1,5 @@
+@import '../../../../variables';
+
 #draw-tool {
   box-sizing: border-box;
   display: grid;
@@ -27,7 +29,7 @@ button {
 }
 
 button:disabled {
-  background: lightgray !important;
+  background: $color-inactive !important;
 
   &:hover {
     filter: none;
@@ -40,7 +42,7 @@ button:disabled {
 
 #clear-button {
   grid-area: clear;
-  background: red;
+  background: $gradient-red;
 }
 
 canvas {
@@ -54,10 +56,11 @@ canvas {
 #guess {
   position: relative;
   box-sizing: border-box;
-  background: #eee;
+  background: $color-inactive;
+  color: white;
   border-radius: 0.5em;
   text-align: center;
-  font-size: 20px;
+  font-size: 32px;
   height: auto;
 
   p {

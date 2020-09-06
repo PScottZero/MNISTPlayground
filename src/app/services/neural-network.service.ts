@@ -65,7 +65,7 @@ export class NeuralNetworkService {
         completed++;
         this.totalCompleted++;
         const accuracy = math.round((correct / completed) * 100, 2);
-        this.messageService.setEpochMessage(epochNo + 1, accuracy,
+        this.messageService.setEpochMessage(epochNo + 1, this.epochCount, accuracy,
           completed, this.mnistService.trainData.length);
       }
     }
@@ -85,24 +85,6 @@ export class NeuralNetworkService {
       this.accuracy = math.round((correct / completed) * 100, 2);
       this.messageService.setTrainingMessage(this.accuracy, completed, this.mnistService.testData.length);
     }
-  }
-
-  getProgress(): number {
-    const total = (this.mnistService.trainData.length * this.epochCount) + this.mnistService.testData.length;
-    return (this.totalCompleted / total) * 100;
-  }
-
-  delay(ms: number): any {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-
-  checkCorrect(label: number): boolean {
-    return label === this.getGuess();
-  }
-
-  getGuess(): number {
-    const outerLayer = this.layers[this.layers.length - 1].activValues;
-    return outerLayer.indexOf(math.max(outerLayer));
   }
 
   forwardPropagation(imageData: number[]): void {
@@ -131,5 +113,23 @@ export class NeuralNetworkService {
         layer.update(this.eta);
       }
     });
+  }
+
+  checkCorrect(label: number): boolean {
+    return label === this.getGuess();
+  }
+
+  getProgress(): number {
+    const total = (this.mnistService.trainData.length * this.epochCount) + this.mnistService.testData.length;
+    return (this.totalCompleted / total) * 100;
+  }
+
+  getGuess(): number {
+    const outerLayer = this.layers[this.layers.length - 1].activValues;
+    return outerLayer.indexOf(math.max(outerLayer));
+  }
+
+  delay(ms: number): any {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 }

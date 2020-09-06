@@ -1,9 +1,11 @@
+@import '../../../variables';
+
 #toolbar {
   box-sizing: border-box;
   padding: 1em;
   display: grid;
   grid-template-columns: 20em 1em auto 1em 20em;
-  background: linear-gradient(to right, #15c1ff, #00e971);
+  background: $gradient;
   grid-template-rows: 100%;
   grid-template-areas: "network-config padding1 training padding2 draw";
   width: 100%;

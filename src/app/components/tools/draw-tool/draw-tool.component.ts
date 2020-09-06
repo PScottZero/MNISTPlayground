@@ -1,5 +1,5 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
-import {NeuralNetworkService} from '../../services/neural-network.service';
+import {NeuralNetworkService} from '../../../services/neural-network.service';
 
 @Component({
   selector: 'app-draw-tool',

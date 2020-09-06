@@ -10,18 +10,18 @@ export class MessageService {
 
   constructor() {}
 
-  setEpochMessage(epochNo, accuracy, completed, total): void {
-    this.status = `Epoch ${epochNo}`;
+  setEpochMessage(epochNo, epochTotal, accuracy, completed, total): void {
+    this.status = `Epoch ${epochNo} of ${epochTotal}`;
+    this.setProgressAndAccuracy(accuracy, completed, total);
+  }
+
+  setTrainingMessage(accuracy, completed, total): void {
+    this.status = 'Testing';
     this.setProgressAndAccuracy(accuracy, completed, total);
   }
 
   setProgressAndAccuracy(accuracy, completed, total): void {
     this.progress = `Progress: ${completed}/${total}`;
     this.accuracy = `Accuracy: ${accuracy}%`;
-  }
-
-  setTrainingMessage(accuracy, completed, total): void {
-    this.status = `Testing`;
-    this.setProgressAndAccuracy(accuracy, completed, total);
   }
 }

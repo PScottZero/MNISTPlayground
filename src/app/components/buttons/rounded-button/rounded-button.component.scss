@@ -1,0 +1,23 @@
+@import '../../../../variables';
+
+button {
+  transition: 0.2s;
+  font-size: 20px;
+  background: $gradient;
+  border-radius: 2em;
+  color: white;
+  border: none;
+  outline: none;
+
+  &:hover {
+    filter: brightness(70%);
+  }
+
+  &:disabled {
+    background: $color-inactive !important;
+
+    &:hover {
+      filter: none;
+    }
+  }
+}

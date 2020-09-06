@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import {NeuralNetworkService} from '../../services/neural-network.service';
-import {MessageService} from '../../services/message.service';
+import {NeuralNetworkService} from '../../../services/neural-network.service';
+import {MessageService} from '../../../services/message.service';
 
 @Component({
   selector: 'app-train-tool',
