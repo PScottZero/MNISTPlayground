@@ -1,0 +1,12 @@
+#grid-layout {
+  display: grid;
+  width: 100vw;
+  height: 100vh;
+  grid-template-rows: 6em auto 12em;
+  grid-template-columns: 100%;
+  grid-template-areas: 'header' 'network' 'toolbar';
+}
+
+app-toolbar {
+  grid-area: toolbar;
+}

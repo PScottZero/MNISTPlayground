@@ -3,11 +3,11 @@ import {NeuralNetworkService} from '../../services/neural-network.service';
 import {MessageService} from '../../services/message.service';
 
 @Component({
-  selector: 'app-train-window',
-  templateUrl: './train-window.component.html',
-  styleUrls: ['./train-window.component.scss']
+  selector: 'app-train-tool',
+  templateUrl: './train-tool.component.html',
+  styleUrls: ['./train-tool.component.scss']
 })
-export class TrainWindowComponent {
+export class TrainToolComponent {
   constructor(private neuralNetworkService: NeuralNetworkService,
               private messageService: MessageService) {}
 
@@ -17,6 +17,15 @@ export class TrainWindowComponent {
 
   getMessage(): string {
     return this.messageService.message;
+  }
+
+  async trainNetwork(): Promise<void> {
+    if (!this.isTraining()) {
+      this.neuralNetworkService.isTraining = true;
+      await this.neuralNetworkService.trainNetwork();
+      this.neuralNetworkService.testNetwork();
+      this.neuralNetworkService.isTraining = false;
+    }
   }
 
   isTraining(): boolean {

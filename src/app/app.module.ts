@@ -7,8 +7,10 @@ import { AppComponent } from './app.component';
 import { HeaderComponent } from './components/header/header.component';
 import {IconButtonComponent} from './components/icon-button/icon-button.component';
 import { NetworkComponent } from './components/network/network.component';
-import { TrainWindowComponent } from './components/train-window/train-window.component';
+import { TrainToolComponent } from './components/train-tool/train-tool.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ToolbarComponent } from './components/toolbar/toolbar.component';
+import { NetworkConfigToolComponent } from './components/network-config-tool/network-config-tool.component';
 
 @NgModule({
   declarations: [
@@ -16,7 +18,9 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     HeaderComponent,
     IconButtonComponent,
     NetworkComponent,
-    TrainWindowComponent
+    TrainToolComponent,
+    ToolbarComponent,
+    NetworkConfigToolComponent
   ],
   imports: [
     BrowserModule,

@@ -1,0 +1,10 @@
+<div id="train-tool">
+  <div *ngIf="!isTraining()">
+    <button (click)="trainNetwork()">Train Network</button>
+  </div>
+  <div *ngIf="isTraining()">
+    <p>Training Network...</p>
+    <p>{{getMessage()}}</p>
+    <progress [value]="getProgress()" max="100"></progress>
+  </div>
+</div>

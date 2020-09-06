@@ -8,12 +8,5 @@ import {NeuralNetworkService} from '../../services/neural-network.service';
 })
 export class NetworkComponent {
 
-  constructor(private neuralNetworkService: NeuralNetworkService) { }
-
-  trainNetwork(): void {
-    this.neuralNetworkService.isTraining = true;
-    this.neuralNetworkService.trainNetwork();
-    this.neuralNetworkService.testNetwork();
-    this.neuralNetworkService.isTraining = false;
-  }
+  constructor() { }
 }

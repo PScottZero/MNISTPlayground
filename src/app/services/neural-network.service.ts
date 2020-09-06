@@ -20,10 +20,12 @@ export class NeuralNetworkService {
   eta: number;
   isTraining: boolean;
   totalCompleted: number;
+  accuracy: number;
 
   constructor(private mnistService: MnistService, private messageService: MessageService) {
     this.isTraining = false;
     this.totalCompleted = 0;
+    this.accuracy = 0;
     this.configureNetwork(DEFAULT_SIZE);
     this.configureTraining(DEFAULT_EPOCH_COUNT, DEFAULT_LEARNING_RATE);
   }
@@ -62,7 +64,7 @@ export class NeuralNetworkService {
         if (completed % 20 === 0) {
           await this.delay(16);
         }
-        const accuracy = math.round((correct / this.mnistService.trainData.length) * 100, 2);
+        const accuracy = math.round((correct / completed) * 100, 2);
         this.messageService.setEpochMessage(epochNo + 1, accuracy,
           completed, this.mnistService.trainData.length);
       }
@@ -77,8 +79,8 @@ export class NeuralNetworkService {
       correct += this.checkCorrect(image) ? 1 : 0;
       completed++;
       this.totalCompleted++;
-      const accuracy = math.round((correct / this.mnistService.testData.length) * 100, 2);
-      this.messageService.setTrainingMessage(accuracy, completed, this.mnistService.testData.length);
+      this.accuracy = math.round((correct / completed) * 100, 2);
+      this.messageService.setTrainingMessage(this.accuracy, completed, this.mnistService.testData.length);
     }
   }
 
@@ -99,7 +101,7 @@ export class NeuralNetworkService {
   forwardPropagation(image: MNISTImage): void {
     this.layers[0].activValues = [];
     for (const pixel of image.getImage()) {
-      this.layers[0].activValues.push(pixel);
+      this.layers[0].activValues.push(pixel / 255);
     }
     for (const layer of this.layers) {
       if (layer.prevLayer !== undefined) {
