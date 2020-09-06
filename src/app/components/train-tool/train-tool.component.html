@@ -3,8 +3,9 @@
     <button (click)="trainNetwork()">Train Network</button>
   </div>
   <div *ngIf="isTraining()">
-    <p>Training Network...</p>
-    <p>{{getMessage()}}</p>
-    <progress [value]="getProgress()" max="100"></progress>
+    <p>{{getStatus()}}</p>
+    <p>{{getProgress()}}</p>
+    <p>{{getAccuracy()}}</p>
+    <progress [value]="getPercentDone()" max="100"></progress>
   </div>
 </div>

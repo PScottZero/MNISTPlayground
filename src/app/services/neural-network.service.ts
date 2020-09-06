@@ -2,7 +2,6 @@ import {Injectable} from '@angular/core';
 import {Layer} from '../classes/Layer';
 import {MnistService} from './mnist.service';
 import {math} from '../classes/mathjs';
-import {MNISTImage} from '../classes/MNISTImage';
 import {MessageService} from './message.service';
 
 const INPUT_SIZE = 784;
@@ -50,20 +49,21 @@ export class NeuralNetworkService {
   }
 
   async trainNetwork(): Promise<void> {
+    this.totalCompleted = 0;
     for (let epochNo = 0; epochNo < this.epochCount; epochNo++) {
       this.mnistService.shuffle();
       let completed = 0;
       let correct = 0;
       for (const image of this.mnistService.trainData) {
-        this.forwardPropagation(image);
-        correct += (this.checkCorrect(image)) ? 1 : 0;
-        this.backPropagation(image);
+        this.forwardPropagation(image.getImage());
+        correct += (this.checkCorrect(image.getLabel())) ? 1 : 0;
+        this.backPropagation(image.getLabel());
         this.updateNetwork();
+        if (completed % 20 === 0) {
+          await this.delay(8);
+        }
         completed++;
         this.totalCompleted++;
-        if (completed % 20 === 0) {
-          await this.delay(16);
-        }
         const accuracy = math.round((correct / completed) * 100, 2);
         this.messageService.setEpochMessage(epochNo + 1, accuracy,
           completed, this.mnistService.trainData.length);
@@ -71,12 +71,15 @@ export class NeuralNetworkService {
     }
   }
 
-  testNetwork(): void {
+  async testNetwork(): Promise<void> {
     let correct = 0;
     let completed = 0;
     for (const image of this.mnistService.testData) {
-      this.forwardPropagation(image);
-      correct += this.checkCorrect(image) ? 1 : 0;
+      this.forwardPropagation(image.getImage());
+      correct += this.checkCorrect(image.getLabel()) ? 1 : 0;
+      if (completed % 20 === 0) {
+        await this.delay(8);
+      }
       completed++;
       this.totalCompleted++;
       this.accuracy = math.round((correct / completed) * 100, 2);
@@ -93,14 +96,18 @@ export class NeuralNetworkService {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
-  checkCorrect(image: MNISTImage): boolean {
-    const outerLayer = this.layers[this.layers.length - 1].activValues;
-    return image.getLabel() === outerLayer.indexOf(math.max(outerLayer));
+  checkCorrect(label: number): boolean {
+    return label === this.getGuess();
   }
 
-  forwardPropagation(image: MNISTImage): void {
+  getGuess(): number {
+    const outerLayer = this.layers[this.layers.length - 1].activValues;
+    return outerLayer.indexOf(math.max(outerLayer));
+  }
+
+  forwardPropagation(imageData: number[]): void {
     this.layers[0].activValues = [];
-    for (const pixel of image.getImage()) {
+    for (const pixel of imageData) {
       this.layers[0].activValues.push(pixel / 255);
     }
     for (const layer of this.layers) {
@@ -110,9 +117,9 @@ export class NeuralNetworkService {
     }
   }
 
-  backPropagation(image: MNISTImage): void {
+  backPropagation(label: number): void {
     const expected = math.zeros(OUTPUT_SIZE);
-    expected[image.getLabel()] = 1;
+    expected[label] = 1;
     for (let layerNo = this.layers.length - 1; layerNo > 0; layerNo--) {
       this.layers[layerNo].calculateGradient(expected);
     }

@@ -11,19 +11,27 @@ export class TrainToolComponent {
   constructor(private neuralNetworkService: NeuralNetworkService,
               private messageService: MessageService) {}
 
-  getProgress(): number {
+  getPercentDone(): number {
     return this.neuralNetworkService.getProgress();
   }
 
-  getMessage(): string {
-    return this.messageService.message;
+  getStatus(): string {
+    return this.messageService.status;
+  }
+
+  getProgress(): string {
+    return this.messageService.progress;
+  }
+
+  getAccuracy(): string {
+    return this.messageService.accuracy;
   }
 
   async trainNetwork(): Promise<void> {
     if (!this.isTraining()) {
       this.neuralNetworkService.isTraining = true;
       await this.neuralNetworkService.trainNetwork();
-      this.neuralNetworkService.testNetwork();
+      await this.neuralNetworkService.testNetwork();
       this.neuralNetworkService.isTraining = false;
     }
   }

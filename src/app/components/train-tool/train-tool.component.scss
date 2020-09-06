@@ -9,12 +9,23 @@
 }
 
 p {
-  font-size: 24px;
+  font-size: 23px;
   padding-bottom: 0.5em;
 }
 
 progress {
   width: 100%;
+}
+
+progress::-webkit-progress-bar {
+  background: #eee;
+  border-radius: 2em;
+  overflow: hidden;
+}
+
+progress::-webkit-progress-value {
+  background: linear-gradient(to right, #15c1ff, #00e971);
+  border-radius: 2em;
 }
 
 button {

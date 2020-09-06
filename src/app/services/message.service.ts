@@ -4,15 +4,24 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class MessageService {
-  message: string;
+  status: string;
+  progress: string;
+  accuracy: string;
 
   constructor() {}
 
   setEpochMessage(epochNo, accuracy, completed, total): void {
-    this.message = `Epoch ${epochNo} accuracy: ${accuracy}% | Progress: ${completed}/${total}`;
+    this.status = `Epoch ${epochNo}`;
+    this.setProgressAndAccuracy(accuracy, completed, total);
+  }
+
+  setProgressAndAccuracy(accuracy, completed, total): void {
+    this.progress = `Progress: ${completed}/${total}`;
+    this.accuracy = `Accuracy: ${accuracy}%`;
   }
 
   setTrainingMessage(accuracy, completed, total): void {
-    this.message = `Training accuracy: ${accuracy}% | Progress: ${completed}/${total}`;
+    this.status = `Testing`;
+    this.setProgressAndAccuracy(accuracy, completed, total);
   }
 }

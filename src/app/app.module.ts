@@ -11,6 +11,7 @@ import { TrainToolComponent } from './components/train-tool/train-tool.component
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ToolbarComponent } from './components/toolbar/toolbar.component';
 import { NetworkConfigToolComponent } from './components/network-config-tool/network-config-tool.component';
+import { DrawToolComponent } from './components/draw-tool/draw-tool.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { NetworkConfigToolComponent } from './components/network-config-tool/net
     NetworkComponent,
     TrainToolComponent,
     ToolbarComponent,
-    NetworkConfigToolComponent
+    NetworkConfigToolComponent,
+    DrawToolComponent
   ],
   imports: [
     BrowserModule,

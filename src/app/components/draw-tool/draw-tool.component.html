@@ -1,0 +1,9 @@
+<div id="draw-tool">
+  <canvas #drawing width="28" height="28" (mousedown)="enableDrawing()" (mouseup)="disableDrawing()"
+          (mousemove)="draw($event)"></canvas>
+  <button id="test-button" (click)="testDrawing()" [disabled]="isTraining()">Test</button>
+  <button id="clear-button" (click)="clearDrawing()">Clear</button>
+  <div id="guess">
+    <p>{{guess}}</p>
+  </div>
+</div>
