@@ -1,22 +1,49 @@
 @import '../../../../variables';
 
-#train-tool {
+.train-tool {
+  @include tool-style;
   position: relative;
-  box-sizing: border-box;
-  background: white;
-  width: 100%;
+  grid-template-rows: $quarter $quarter $quarter $quarter;
+  grid-template-columns: 100%;
+  grid-template-areas: 'status' 'progress' 'accuracy' 'bar';
+}
+
+#status {
+  grid-area: status;
+}
+
+#progress {
+  grid-area: progress;
+}
+
+#accuracy {
+  grid-area: accuracy;
+}
+
+#train-button {
+  grid-area: accuracy;
+  width: 12em;
   height: 100%;
-  border-radius: 1em;
-  padding: 2em;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+#network-accuracy {
+  grid-area: progress;
+  text-align: center;
 }
 
 p {
-  font-size: 23px;
-  padding-bottom: 0.5em;
+  font-size: 20px;
+  line-height: 2;
 }
 
 progress {
+  grid-area: bar;
   width: 100%;
+  height: 100%;
+  bottom: 0;
 }
 
 progress::-webkit-progress-bar {
@@ -28,32 +55,4 @@ progress::-webkit-progress-bar {
 progress::-webkit-progress-value {
   background: $gradient;
   border-radius: 2em;
-}
-
-button {
-  position: absolute;
-  transition: 0.2s;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  border: none;
-  outline: none;
-  background: $gradient;
-  padding: 0.6em 1em;
-  font-size: 20px;
-  border-radius: 2em;
-  color: white;
-
-  &:hover {
-    filter: brightness(75%);
-  }
-}
-
-#dimmed-background {
-  position: absolute;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(5px);
 }

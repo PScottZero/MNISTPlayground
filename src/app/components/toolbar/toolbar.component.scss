@@ -4,10 +4,11 @@
   box-sizing: border-box;
   padding: 1em;
   display: grid;
-  grid-template-columns: 20em 1em auto 1em 20em;
+  grid-template-columns: 22em auto 22em;
   background: $gradient;
   grid-template-rows: 100%;
-  grid-template-areas: "network-config padding1 training padding2 draw";
+  grid-template-areas: "network-config training draw";
+  column-gap: 1em;
   width: 100%;
   height: 100%;
 }

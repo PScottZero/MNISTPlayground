@@ -32,13 +32,15 @@ export class DrawToolComponent implements OnInit {
   }
 
   testDrawing(): void {
-    const image = this.canvas.nativeElement.getContext('2d').getImageData(0, 0, 28, 28);
-    const imageArray = [];
-    for (let i = 0; i < image.data.length; i += 4) {
-      imageArray.push((image.data[i] + image.data[i + 1] + image.data[i + 2]) / 3);
+    if (!this.isTraining()) {
+      const image = this.canvas.nativeElement.getContext('2d').getImageData(0, 0, 28, 28);
+      const imageArray = [];
+      for (let i = 0; i < image.data.length; i += 4) {
+        imageArray.push((image.data[i] + image.data[i + 1] + image.data[i + 2]) / 3);
+      }
+      this.neuralNetworkService.forwardPropagation(imageArray);
+      this.guess = this.neuralNetworkService.getGuess();
     }
-    this.neuralNetworkService.forwardPropagation(imageArray);
-    this.guess = this.neuralNetworkService.getGuess();
   }
 
   clearDrawing(): void {

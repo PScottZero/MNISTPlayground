@@ -27,6 +27,10 @@ export class TrainToolComponent {
     return this.messageService.accuracy;
   }
 
+  getNetworkAccuracy(): number {
+    return this.neuralNetworkService.accuracy;
+  }
+
   async trainNetwork(): Promise<void> {
     if (!this.isTraining()) {
       this.neuralNetworkService.isTraining = true;

@@ -1,11 +1,10 @@
-<div id="train-tool">
-  <div *ngIf="!isTraining()">
-    <button (click)="trainNetwork()">Train Network</button>
-  </div>
-  <div *ngIf="isTraining()">
-    <p>{{getStatus()}}</p>
-    <p>{{getProgress()}}</p>
-    <p>{{getAccuracy()}}</p>
-    <progress [value]="getPercentDone()" max="100"></progress>
-  </div>
+<div *ngIf="!isTraining()" class="train-tool">
+  <p id="network-accuracy">Network Accuracy: {{getNetworkAccuracy()}}%</p>
+  <app-rounded-button id="train-button" [text]="'Train Network'" (click)="trainNetwork()"></app-rounded-button>
+</div>
+<div *ngIf="isTraining()" class="train-tool">
+  <p id="status">{{getStatus()}}</p>
+  <p id="progress">{{getProgress()}}</p>
+  <p id="accuracy">{{getAccuracy()}}</p>
+  <progress [value]="getPercentDone()" max="100"></progress>
 </div>

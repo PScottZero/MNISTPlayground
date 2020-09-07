@@ -1,6 +1,52 @@
+@import '../../../../variables';
+
 #network-config {
-  width: 100%;
+  @include tool-style;
+  grid-template-columns: $third $third $third;
+  grid-template-rows: $quarter $quarter $quarter $quarter;
+  grid-template-areas:
+    'size size size'
+    'epoch epoch epoch'
+    'eta eta eta'
+    'load save set';
+}
+
+label {
+  font-size: 20px;
+  line-height: 2;
+}
+
+input {
+  background: $color-inactive;
+  float: right;
+  width: 8em;
   height: 100%;
-  border-radius: 1em;
-  background: white;
+  font-size: 20px;
+  border-radius: 2em;
+  outline: none;
+  text-align: center;
+}
+
+#network-size-input {
+  grid-area: size;
+}
+
+#epoch-count-input {
+  grid-area: epoch;
+}
+
+#learning-rate-input {
+  grid-area: eta;
+}
+
+#save {
+  grid-area: save;
+}
+
+#load {
+  grid-area: load;
+}
+
+#set {
+  grid-area: set;
 }
