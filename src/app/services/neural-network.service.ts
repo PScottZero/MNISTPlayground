@@ -1,56 +1,34 @@
-import {Injectable} from '@angular/core';
-import {Layer} from '../classes/Layer';
+import {EventEmitter, Injectable} from '@angular/core';
 import {MnistService} from './mnist.service';
 import {math} from '../classes/mathjs';
 import {MessageService} from './message.service';
+import {NeuralNetwork} from '../classes/NeuralNetwork';
 
 const INPUT_SIZE = 784;
 const OUTPUT_SIZE = 10;
-const DEFAULT_SIZE = [INPUT_SIZE, 32, OUTPUT_SIZE];
+const DEFAULT_SIZE = [INPUT_SIZE, 16, 16, OUTPUT_SIZE];
 const DEFAULT_EPOCH_COUNT = 3;
-const DEFAULT_LEARNING_RATE = 0.001;
+const DEFAULT_LEARNING_RATE = 0.01;
 
 @Injectable({
   providedIn: 'root'
 })
 export class NeuralNetworkService {
-  layers: Layer[];
-  epochCount: number;
-  eta: number;
+  network: NeuralNetwork;
   isTraining: boolean;
   totalCompleted: number;
-  accuracy: number;
+  imageEmitter: EventEmitter<number[]>;
 
   constructor(private mnistService: MnistService, private messageService: MessageService) {
+    this.network = new NeuralNetwork(DEFAULT_SIZE, DEFAULT_EPOCH_COUNT, DEFAULT_LEARNING_RATE);
     this.isTraining = false;
     this.totalCompleted = 0;
-    this.accuracy = 0;
-    this.configureNetwork(DEFAULT_SIZE);
-    this.configureTraining(DEFAULT_EPOCH_COUNT, DEFAULT_LEARNING_RATE);
-  }
-
-  configureNetwork(size: number[]): void {
-    let prevLayer;
-    let isOutput = false;
-    this.layers = [];
-    size.forEach((layerSize, index) => {
-      if (index === size.length - 1) {
-        isOutput = true;
-      }
-      const newLayer = new Layer(layerSize, prevLayer, isOutput);
-      this.layers.push(newLayer);
-      prevLayer = newLayer;
-    });
-  }
-
-  configureTraining(epochCount: number, eta: number): void {
-    this.epochCount = epochCount;
-    this.eta = eta;
+    this.imageEmitter = new EventEmitter<number[]>();
   }
 
   async trainNetwork(): Promise<void> {
     this.totalCompleted = 0;
-    for (let epochNo = 0; epochNo < this.epochCount; epochNo++) {
+    for (let epochNo = 0; epochNo < this.network.epochCount; epochNo++) {
       this.mnistService.shuffle();
       let completed = 0;
       let correct = 0;
@@ -65,7 +43,7 @@ export class NeuralNetworkService {
         completed++;
         this.totalCompleted++;
         const accuracy = math.round((correct / completed) * 100, 2);
-        this.messageService.setEpochMessage(epochNo + 1, this.epochCount, accuracy,
+        this.messageService.setEpochMessage(epochNo + 1, this.network.epochCount, accuracy,
           completed, this.mnistService.trainData.length);
       }
     }
@@ -82,35 +60,39 @@ export class NeuralNetworkService {
       }
       completed++;
       this.totalCompleted++;
-      this.accuracy = math.round((correct / completed) * 100, 2);
-      this.messageService.setTrainingMessage(this.accuracy, completed, this.mnistService.testData.length);
+      this.network.accuracy = math.round((correct / completed) * 100, 2);
+      this.messageService.setTrainingMessage(this.network.accuracy, completed, this.mnistService.testData.length);
     }
+    this.totalCompleted = 0;
   }
 
   forwardPropagation(imageData: number[]): void {
-    this.layers[0].activValues = [];
+    this.network.layers[0].activValues = [];
     for (const pixel of imageData) {
-      this.layers[0].activValues.push(pixel / 255);
+      this.network.layers[0].activValues.push(pixel / 255);
     }
-    for (const layer of this.layers) {
+    for (const layer of this.network.layers) {
       if (layer.prevLayer !== undefined) {
         layer.propagate();
       }
+    }
+    if (this.totalCompleted % 100 === 0) {
+      this.imageEmitter.emit(imageData);
     }
   }
 
   backPropagation(label: number): void {
     const expected = math.zeros(OUTPUT_SIZE);
     expected[label] = 1;
-    for (let layerNo = this.layers.length - 1; layerNo > 0; layerNo--) {
-      this.layers[layerNo].calculateGradient(expected);
+    for (let layerNo = this.network.layers.length - 1; layerNo > 0; layerNo--) {
+      this.network.layers[layerNo].calculateGradient(expected);
     }
   }
 
   updateNetwork(): void {
-    this.layers.forEach((layer, index) => {
+    this.network.layers.forEach((layer, index) => {
       if (index !== 0) {
-        layer.update(this.eta);
+        layer.update(this.network.eta);
       }
     });
   }
@@ -120,12 +102,12 @@ export class NeuralNetworkService {
   }
 
   getProgress(): number {
-    const total = (this.mnistService.trainData.length * this.epochCount) + this.mnistService.testData.length;
+    const total = (this.mnistService.trainData.length * this.network.epochCount) + this.mnistService.testData.length;
     return (this.totalCompleted / total) * 100;
   }
 
   getGuess(): number {
-    const outerLayer = this.layers[this.layers.length - 1].activValues;
+    const outerLayer = this.network.layers[this.network.layers.length - 1].activValues;
     return outerLayer.indexOf(math.max(outerLayer));
   }
 

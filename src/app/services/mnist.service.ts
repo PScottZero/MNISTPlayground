@@ -11,14 +11,14 @@ export class MnistService {
   testData: MNISTImage[];
 
   constructor(private http: HttpClient) {
-    this.http.get('assets/mnist/reduced_mnist_train.csv', {responseType: 'text'})
+    this.http.get('assets/mnist/mnist_train_reduced.csv', {responseType: 'text'})
       .subscribe(response => {
           const lines = response.split('\n');
           lines.pop();
           this.trainData = Array.from(lines, line => new MNISTImage(line.split(',')));
         }
       );
-    this.http.get('assets/mnist/reduced_mnist_test.csv', {responseType: 'text'})
+    this.http.get('assets/mnist/mnist_test_reduced.csv', {responseType: 'text'})
       .subscribe(response => {
           const lines = response.split('\n');
           lines.pop();

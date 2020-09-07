@@ -16,7 +16,7 @@ export class Layer {
     this.size = size;
     this.isOutput = isOutput;
     this.prevLayer = prevLayer;
-    this.activValues = [];
+    this.activValues = math.zeros(size);
     if (prevLayer !== undefined) {
       this.weights = math.divide(math.random([size, prevLayer.size]), size);
       this.biases = math.divide(math.random([size]), size);

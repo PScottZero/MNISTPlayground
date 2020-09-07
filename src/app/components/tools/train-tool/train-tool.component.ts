@@ -28,7 +28,7 @@ export class TrainToolComponent {
   }
 
   getNetworkAccuracy(): number {
-    return this.neuralNetworkService.accuracy;
+    return this.neuralNetworkService.network.accuracy;
   }
 
   async trainNetwork(): Promise<void> {
