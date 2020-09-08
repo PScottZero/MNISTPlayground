@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, EventEmitter, OnInit} from '@angular/core';
 import {NeuralNetworkService} from '../../../services/neural-network.service';
 import {NeuralNetwork} from '../../../classes/NeuralNetwork';
 
@@ -17,7 +17,7 @@ export class NetworkConfigToolComponent implements OnInit {
   constructor(private neuralNetworkService: NeuralNetworkService) { }
 
   ngOnInit(): void {
-    this.loadNetworkPrompt = document.getElementById('load-network-visual');
+    this.loadNetworkPrompt = document.getElementById('load-network');
     this.initFields();
     this.validateInput();
   }
@@ -40,7 +40,7 @@ export class NetworkConfigToolComponent implements OnInit {
     this.neuralNetworkService.network.restorePrevLayers();
     anchor.setAttribute('href', url);
     anchor.setAttribute('download',
-      'mnist-network-visual-' + Math.round(this.neuralNetworkService.network.accuracy) + '.json');
+      'mnist-network-' + Math.round(this.neuralNetworkService.network.accuracy) + '.json');
     anchor.click();
     window.URL.revokeObjectURL(url);
   }
@@ -60,7 +60,7 @@ export class NetworkConfigToolComponent implements OnInit {
     this.inputValidity = [true, true, true];
     let allInputsValid = true;
     for (const layerSize of this.getNetworkSize()) {
-      if (Number.isNaN(layerSize)) {
+      if (Number.isNaN(layerSize) || this.getNetworkSize().length > 6) {
         this.inputValidity[0] = false;
         allInputsValid = false;
         break;
@@ -83,10 +83,17 @@ export class NetworkConfigToolComponent implements OnInit {
 
   getNetworkSize(): number[] {
     let size;
-    if (this.inputEmpty(this.size)) {
+    if (!this.inputEmpty(this.size)) {
       size = this.size.split(',').map(layerSize => +layerSize);
       size.unshift(784);
       size.push(10);
+      for (let i = 1; i < size.length - 1; i++) {
+        if (size[i] < 4) {
+          size[i] = 4;
+        } else if (size[i] > 32) {
+          size[i] = 32;
+        }
+      }
     } else {
       size = [784, 10];
     }
@@ -98,6 +105,7 @@ export class NetworkConfigToolComponent implements OnInit {
       this.neuralNetworkService.network = new NeuralNetwork(this.getNetworkSize(),
         +this.epochCount, +this.learningRate);
     }
+    this.neuralNetworkService.updateNetworkImage.emit();
   }
 
   isTraining(): boolean {

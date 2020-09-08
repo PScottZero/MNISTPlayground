@@ -18,12 +18,14 @@ export class NeuralNetworkService {
   isTraining: boolean;
   totalCompleted: number;
   imageEmitter: EventEmitter<number[]>;
+  updateNetworkImage: EventEmitter<void>;
 
   constructor(private mnistService: MnistService, private messageService: MessageService) {
+    this.updateNetworkImage = new EventEmitter<void>();
+    this.imageEmitter = new EventEmitter<number[]>();
     this.network = new NeuralNetwork(DEFAULT_SIZE, DEFAULT_EPOCH_COUNT, DEFAULT_LEARNING_RATE);
     this.isTraining = false;
     this.totalCompleted = 0;
-    this.imageEmitter = new EventEmitter<number[]>();
   }
 
   async trainNetwork(): Promise<void> {
