@@ -52,6 +52,7 @@ export class NetworkConfigToolComponent implements OnInit {
       this.neuralNetworkService.network.configureNetworkFromJSON(
         JSON.parse(fileReader.result as string));
       this.initFields();
+      this.neuralNetworkService.updateNetworkImage.emit();
     };
     fileReader.readAsText(file);
   }

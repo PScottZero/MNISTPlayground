@@ -1,4 +1,5 @@
 import {Layer} from './Layer';
+import {math} from './mathjs';
 
 export class NeuralNetwork {
   size: number[];
@@ -37,6 +38,7 @@ export class NeuralNetwork {
       newLayer.biases = layer.biases;
       newLayer.isOutput = layer.isOutput;
       newLayer.size = layer.size;
+      newLayer.activValues = math.zeros(layer.size);
       this.layers.push(newLayer);
     }
     this.size = networkJSON.size;

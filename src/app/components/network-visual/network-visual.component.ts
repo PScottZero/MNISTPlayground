@@ -35,7 +35,6 @@ export class NetworkVisualComponent implements OnInit {
     });
 
     this.neuralNetworkService.updateNetworkImage.subscribe(() => {
-      console.log('oh no');
       this.drawNetwork();
     });
   }
