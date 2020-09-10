@@ -7,10 +7,10 @@
   height: 100%;
   text-align: center;
   overflow-x: auto;
+  overflow-y: hidden;
 
   @media screen and (max-width: $mobile-cutoff) {
     padding-top: 4em;
-    overflow-y: hidden;
   }
 }
 
