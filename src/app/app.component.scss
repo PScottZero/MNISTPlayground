@@ -1,3 +1,5 @@
+@import '../variables';
+
 #grid-layout {
   display: grid;
   width: 100%;
@@ -5,6 +7,10 @@
   grid-template-rows: 6em calc(100% - 22em) 16em;
   grid-template-columns: 100%;
   grid-template-areas: 'header' 'network' 'toolbar';
+
+  @media screen and (max-width: $mobile-cutoff) {
+    grid-template-rows: 6em calc(100% - 24em) 18em;
+  }
 }
 
 app-header {

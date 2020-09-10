@@ -48,13 +48,21 @@ export class DrawToolComponent implements OnInit {
     ctx.clearRect(0, 0, 28, 28);
   }
 
-  draw(event): void {
-    if (this.drawingEnabled)  {
+  mouseDraw(event): void {
+    this.drawPixel(event.pageX, event.pageY);
+  }
+
+  touchDraw(event): void {
+    this.drawPixel(event.touches[0].clientX, event.touches[0].clientY);
+  }
+
+  drawPixel(x: number, y: number): void {
+    if (this.drawingEnabled) {
       const ctx = this.canvas.nativeElement.getContext('2d');
       const bound = this.canvas.nativeElement.getBoundingClientRect();
       const ratio = bound.width / this.canvas.nativeElement.width;
-      const mouseX = event.pageX - bound.x;
-      const mouseY = event.pageY - bound.y;
+      const mouseX = x - bound.x;
+      const mouseY = y - bound.y;
       ctx.fillStyle = 'white';
       ctx.fillRect(Math.floor(mouseX / ratio), Math.floor(mouseY / ratio), 2, 2);
     }

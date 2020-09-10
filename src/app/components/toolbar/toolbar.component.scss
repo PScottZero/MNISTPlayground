@@ -4,13 +4,25 @@
   box-sizing: border-box;
   padding: 1em;
   display: grid;
-  grid-template-columns: 22em auto 22em;
   background: $gradient;
-  grid-template-rows: 100%;
-  grid-template-areas: "network-config training draw";
-  column-gap: 1em;
   width: 100%;
   height: 100%;
+
+  @media screen and (min-width: $mobile-cutoff) {
+    grid-template-rows: 100%;
+    grid-template-columns: 22em auto 22em;
+    grid-template-areas: 'network-config training draw';
+    column-gap: 1em;
+  }
+
+  @media screen and (max-width: $mobile-cutoff) {
+    grid-template-rows: 14em 1em 14em 14em 0.1em;
+    grid-template-columns: 100%;
+    grid-template-areas: 'training' 'scroll' 'network-config' 'draw';
+    row-gap: 1em;
+    overflow-y: auto;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+  }
 }
 
 app-network-config-tool {
@@ -23,4 +35,23 @@ app-train-tool {
 
 app-draw-tool {
   grid-area: draw;
+}
+
+#scroll-indicator {
+  grid-area: scroll;
+  text-align: center;
+  line-height: 1em;
+  width: 100%;
+  height: 100%;
+  color: white;
+
+  @media screen and (min-width: $mobile-cutoff) {
+    display: none;
+  }
+}
+
+#mobile-padding {
+  @media screen and (min-width: $mobile-cutoff) {
+    display: none;
+  }
 }
