@@ -1,9 +1,17 @@
 <div id="toolbar">
-  <app-network-config-tool></app-network-config-tool>
-  <div id="scroll-indicator">
-    <p>Scroll Down</p>
+  <app-rounded-button id="configure-button" [text]="'Configure'"
+                      (click)="toggleConfigWindow()"></app-rounded-button>
+  <div class="mobile-background" [class.show-tool]="showConfigWindow">
+    <app-network-config-tool></app-network-config-tool>
   </div>
-  <app-train-tool></app-train-tool>
-  <app-draw-tool></app-draw-tool>
-  <div id="mobile-padding"></div>
+  <app-rounded-button id="train-button" [text]="'Train'"
+                      (click)="toggleTrainWindow()"></app-rounded-button>
+  <div class="mobile-background" [class.show-tool]="showTrainWindow">
+    <app-train-tool></app-train-tool>
+  </div>
+  <app-rounded-button id="draw-button" [text]="'Draw'"
+                      (click)="toggleDrawWindow()"></app-rounded-button>
+  <div class="mobile-background" [class.show-tool]="showDrawWindow">
+    <app-draw-tool></app-draw-tool>
+  </div>
 </div>

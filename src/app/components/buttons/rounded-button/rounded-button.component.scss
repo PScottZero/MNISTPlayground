@@ -11,8 +11,10 @@ button {
   border: none;
   outline: none;
 
-  &:hover {
-    filter: brightness(70%);
+  @media screen and (min-width: $mobile-cutoff) {
+    &:hover {
+      filter: brightness(70%);
+    }
   }
 
   &:disabled {
