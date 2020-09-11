@@ -20,16 +20,15 @@ header {
   padding: 1em;
 
   img {
+    float: left;
+
     @media (min-width: $mobile-cutoff) {
-      float: left;
       height: 100%;
     }
 
     @media (max-width: $mobile-cutoff) {
-      display: block;
-      margin: auto;
-      width: 80%;
       height: 100%;
+      width: 60%;
     }
   }
 }

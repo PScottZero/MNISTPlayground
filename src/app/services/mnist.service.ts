@@ -12,7 +12,7 @@ export class MnistService {
   digitTest: MNISTImage[];
   fashionTrain: MNISTImage[];
   fashionTest: MNISTImage[];
-  useFashionMNIST: boolean;
+  usingFashionMNIST: boolean;
 
   constructor(private http: HttpClient) {
     this.loadData('assets/mnist/mnist_train_reduced.csv').subscribe(
@@ -27,7 +27,7 @@ export class MnistService {
     this.loadData('assets/mnist/fashion-mnist_test_reduced.csv').subscribe(
       csv => this.fashionTest = this.parseCsv(csv)
     );
-    this.useFashionMNIST = false;
+    this.usingFashionMNIST = false;
   }
 
   loadData(dir: string): Observable<string> {
@@ -41,11 +41,11 @@ export class MnistService {
   }
 
   getTrainData(): MNISTImage[] {
-    return this.useFashionMNIST ? this.fashionTrain : this.digitTrain;
+    return this.usingFashionMNIST ? this.fashionTrain : this.digitTrain;
   }
 
   getTestData(): MNISTImage[] {
-    return this.useFashionMNIST ? this.fashionTest : this.digitTest;
+    return this.usingFashionMNIST ? this.fashionTest : this.digitTest;
   }
 
   shuffle(): void {
@@ -55,7 +55,7 @@ export class MnistService {
       shuffledData.push(this.getTrainData()[randIndex]);
       this.getTrainData().splice(randIndex, 1);
     }
-    if (this.useFashionMNIST) {
+    if (this.usingFashionMNIST) {
       this.fashionTrain = shuffledData;
     } else {
       this.digitTrain = shuffledData;

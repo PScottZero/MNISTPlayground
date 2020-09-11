@@ -30,7 +30,7 @@ export class NeuralNetworkService {
 
   toggleMode(): void {
     this.network = new NeuralNetwork(this.network.size, this.network.epochCount, this.network.eta);
-    this.mnistService.useFashionMNIST = !this.mnistService.useFashionMNIST;
+    this.mnistService.usingFashionMNIST = !this.mnistService.usingFashionMNIST;
   }
 
   async trainNetwork(): Promise<void> {

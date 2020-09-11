@@ -1,5 +1,7 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {NeuralNetworkService} from '../../../services/neural-network.service';
+import {FASHION_LABELS} from '../../../classes/MNISTImage';
+import {MnistService} from '../../../services/mnist.service';
 
 @Component({
   selector: 'app-draw-tool',
@@ -10,13 +12,21 @@ export class DrawToolComponent implements OnInit {
   @ViewChild('drawing')
   canvas: ElementRef<HTMLCanvasElement>;
   drawingEnabled: boolean;
-  guess: number;
+  guess: string;
 
-  constructor(private neuralNetworkService: NeuralNetworkService) { }
+  constructor(private neuralNetworkService: NeuralNetworkService,
+              private mnistService: MnistService) { }
 
   ngOnInit(): void {
-    this.guess = 0;
+    this.guess = 'N/A';
     this.disableDrawing();
+    this.neuralNetworkService.updateNetworkVisual.subscribe(() => {
+      this.guess = 'N/A';
+    });
+  }
+
+  usingFashionMNIST(): boolean {
+    return this.mnistService.usingFashionMNIST;
   }
 
   isTraining(): boolean {
@@ -39,7 +49,11 @@ export class DrawToolComponent implements OnInit {
         imageArray.push((image.data[i] + image.data[i + 1] + image.data[i + 2]) / 3);
       }
       this.neuralNetworkService.forwardPropagation(imageArray);
-      this.guess = this.neuralNetworkService.getGuess();
+      if (this.mnistService.usingFashionMNIST) {
+        this.guess = FASHION_LABELS[this.neuralNetworkService.getGuess()];
+      } else {
+        this.guess = this.neuralNetworkService.getGuess().toString();
+      }
     }
   }
 

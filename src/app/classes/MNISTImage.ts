@@ -1,3 +1,6 @@
+export const FASHION_LABELS = ['TShirt', 'Trouser', 'Pullover', 'Dress', 'Coat',
+  'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Boot'];
+
 export class MNISTImage {
   imageData: number[];
 

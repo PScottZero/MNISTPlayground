@@ -6,6 +6,6 @@
                       [disabled]="isTraining()"></app-rounded-button>
   <app-rounded-button id="clear-button" [text]="'Clear'" (click)="clearDrawing()"></app-rounded-button>
   <div id="guess">
-    <p>{{guess}}</p>
+    <p [class.smaller-font]="usingFashionMNIST()">{{guess}}</p>
   </div>
 </div>

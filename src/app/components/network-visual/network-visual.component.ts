@@ -1,5 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {NeuralNetworkService} from '../../services/neural-network.service';
+import {MnistService} from '../../services/mnist.service';
+import {FASHION_LABELS} from '../../classes/MNISTImage';
 import * as math from 'mathjs';
 
 const NEURON_OFF = [21, 193, 255];
@@ -7,6 +9,10 @@ const NEURON_ON = [0, 233, 113];
 const WEIGHT_LOW = [105, 215, 255];
 const WEIGHT_HIGH = [115, 240, 176];
 const PADDING = 50;
+const INPUT_RADIUS = 600;
+const OUTPUT_RADIUS = 177.5;
+const INNER_INPUT_RADIUS = 550;
+const FASHION_OUTPUT_WIDTH = 800;
 
 @Component({
   selector: 'app-network',
@@ -19,7 +25,8 @@ export class NetworkVisualComponent implements OnInit {
   currentImage: number[];
   neuronCoords: number[][][];
 
-  constructor(private neuralNetworkService: NeuralNetworkService) {}
+  constructor(private neuralNetworkService: NeuralNetworkService,
+              private mnistService: MnistService) {}
 
   ngOnInit(): void {
     this.canvas = document.getElementById('network-visual') as HTMLCanvasElement;
@@ -47,10 +54,17 @@ export class NetworkVisualComponent implements OnInit {
   generateNeuronCoords(): void {
     const layers = this.neuralNetworkService.network.layers;
     const layerSpacing = this.canvas.width / (layers.length - 1);
-    this.neuronCoords = [[[600, this.canvas.height / 2]]];
+    this.neuronCoords = [[[INPUT_RADIUS, this.canvas.height / 2]]];
     layers.forEach((layer, index) => {
       if (index !== 0) {
-        const xVal = (index === layers.length - 1) ? this.canvas.width - 177.5 : layerSpacing * index;
+        let xVal: number;
+        if (this.mnistService.usingFashionMNIST && index === layers.length - 1) {
+          xVal = this.canvas.width - FASHION_OUTPUT_WIDTH;
+        } else if (index === layers.length - 1) {
+          xVal = this.canvas.width - OUTPUT_RADIUS;
+        } else {
+          xVal = layerSpacing * index;
+        }
         this.neuronCoords.push(this.generateLayerCoords(xVal, layer.activValues.length));
       }
     });
@@ -66,25 +80,30 @@ export class NetworkVisualComponent implements OnInit {
   }
 
   drawNeurons(): void {
-    const grad = this.context.createLinearGradient(0, 0, 1200, 0);
+    const grad = this.context.createLinearGradient(0, 0, INPUT_RADIUS * 2, 0);
     grad.addColorStop(0, '#15c1ff');
     grad.addColorStop(1, '#00e971');
-    this.neuralNetworkService.network.layers.forEach((layer, layerIndex) => {
+    const layers = this.neuralNetworkService.network.layers;
+    layers.forEach((layer, layerIndex) => {
       this.neuronCoords[layerIndex].forEach((coord, coordIndex) => {
-        let neuronSize = 600;
+        let neuronRadius = INPUT_RADIUS;
         this.context.fillStyle = grad;
         if (layerIndex !== 0) {
-          neuronSize = this.getNeuronRadius(layer.activValues.length);
+          neuronRadius = this.getNeuronRadius(layer.activValues.length);
           let percent = layer.activValues[coordIndex] / math.max(layer.activValues);
           if (math.max(layer.activValues) === math.min(layer.activValues)) {
             percent = 0;
           }
           this.context.fillStyle = this.getColor(NEURON_OFF, NEURON_ON, percent);
         }
-        this.context.beginPath();
-        this.context.arc(coord[0], coord[1], neuronSize, 0, 2 * Math.PI);
-        this.context.fill();
-        this.context.closePath();
+        if (this.mnistService.usingFashionMNIST && layerIndex === layers.length - 1) {
+          this.context.fillRect(coord[0], coord[1] - neuronRadius, FASHION_OUTPUT_WIDTH, neuronRadius * 2);
+        } else {
+          this.context.beginPath();
+          this.context.arc(coord[0], coord[1], neuronRadius, 0, 2 * Math.PI);
+          this.context.fill();
+          this.context.closePath();
+        }
       });
     });
   }
@@ -93,21 +112,27 @@ export class NetworkVisualComponent implements OnInit {
     this.neuronCoords[this.neuronCoords.length - 1].forEach((coord, coordIndex) => {
       this.context.fillStyle = 'white';
       this.context.font = '200px Arial';
-      this.context.fillText(coordIndex.toString(), coord[0] - 55, coord[1] + 70);
+      this.context.textAlign = 'center';
+
+      if (!this.mnistService.usingFashionMNIST) {
+        this.context.fillText(coordIndex.toString(), coord[0], coord[1] + 70);
+      } else {
+        this.context.fillText(FASHION_LABELS[coordIndex], coord[0] + FASHION_OUTPUT_WIDTH / 2, coord[1] + 70);
+      }
     });
   }
 
   drawCurrentMNISTImage(): void {
     this.context.fillStyle = 'black';
     this.context.beginPath();
-    this.context.arc(600, 2000, 550, 0, 2 * Math.PI);
+    this.context.arc(600, 2000, INNER_INPUT_RADIUS, 0, 2 * Math.PI);
     this.context.fill();
     this.context.closePath();
     for (let px = 0; px < this.currentImage.length; px++) {
       const intensity = this.currentImage[px];
       this.context.fillStyle = 'rgb(' + intensity + ',' + intensity + ',' + intensity + ')';
-      this.context.fillRect(180 + (px % 28) * 30,
-        1580 + Math.floor(px / 28) * 30, 30, 30);
+      this.context.fillRect(222 + (px % 28) * 27,
+        1622 + Math.floor(px / 28) * 27, 27, 27);
     }
   }
 
