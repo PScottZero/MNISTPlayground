@@ -17,15 +17,20 @@ export class NeuralNetworkService {
   network: NeuralNetwork;
   isTraining: boolean;
   totalCompleted: number;
-  imageEmitter: EventEmitter<number[]>;
-  updateNetworkImage: EventEmitter<void>;
+  sendMNISTImage: EventEmitter<number[]>;
+  updateNetworkVisual: EventEmitter<void>;
 
   constructor(private mnistService: MnistService, private messageService: MessageService) {
-    this.updateNetworkImage = new EventEmitter<void>();
-    this.imageEmitter = new EventEmitter<number[]>();
+    this.updateNetworkVisual = new EventEmitter<void>();
+    this.sendMNISTImage = new EventEmitter<number[]>();
     this.network = new NeuralNetwork(DEFAULT_SIZE, DEFAULT_EPOCH_COUNT, DEFAULT_LEARNING_RATE);
     this.isTraining = false;
     this.totalCompleted = 0;
+  }
+
+  toggleMode(): void {
+    this.network = new NeuralNetwork(this.network.size, this.network.epochCount, this.network.eta);
+    this.mnistService.useFashionMNIST = !this.mnistService.useFashionMNIST;
   }
 
   async trainNetwork(): Promise<void> {
@@ -34,7 +39,7 @@ export class NeuralNetworkService {
       this.mnistService.shuffle();
       let completed = 0;
       let correct = 0;
-      for (const image of this.mnistService.trainData) {
+      for (const image of this.mnistService.getTrainData()) {
         this.forwardPropagation(image.getImage());
         correct += (this.checkCorrect(image.getLabel())) ? 1 : 0;
         this.backPropagation(image.getLabel());
@@ -46,7 +51,7 @@ export class NeuralNetworkService {
         this.totalCompleted++;
         const accuracy = math.round((correct / completed) * 100, 2);
         this.messageService.setEpochMessage(epochNo + 1, this.network.epochCount, accuracy,
-          completed, this.mnistService.trainData.length);
+          completed, this.mnistService.getTrainData().length);
       }
     }
   }
@@ -54,7 +59,7 @@ export class NeuralNetworkService {
   async testNetwork(): Promise<void> {
     let correct = 0;
     let completed = 0;
-    for (const image of this.mnistService.testData) {
+    for (const image of this.mnistService.getTestData()) {
       this.forwardPropagation(image.getImage());
       correct += this.checkCorrect(image.getLabel()) ? 1 : 0;
       if (completed % 20 === 0) {
@@ -63,7 +68,8 @@ export class NeuralNetworkService {
       completed++;
       this.totalCompleted++;
       this.network.accuracy = math.round((correct / completed) * 100, 2);
-      this.messageService.setTrainingMessage(this.network.accuracy, completed, this.mnistService.testData.length);
+      this.messageService.setTrainingMessage(this.network.accuracy, completed,
+        this.mnistService.getTestData().length);
     }
     this.totalCompleted = 0;
   }
@@ -79,7 +85,7 @@ export class NeuralNetworkService {
       }
     }
     if (this.totalCompleted % 100 === 0) {
-      this.imageEmitter.emit(imageData);
+      this.sendMNISTImage.emit(imageData);
     }
   }
 
@@ -104,7 +110,8 @@ export class NeuralNetworkService {
   }
 
   getProgress(): number {
-    const total = (this.mnistService.trainData.length * this.network.epochCount) + this.mnistService.testData.length;
+    const total = (this.mnistService.getTrainData().length * this.network.epochCount) +
+      this.mnistService.getTestData().length;
     return (this.totalCompleted / total) * 100;
   }
 

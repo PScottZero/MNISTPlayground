@@ -5,6 +5,14 @@
   margin: 0;
   padding: 0;
   font-family: Comfortaa, Arial, sans-serif;
+
+  &:not(input) {
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+  }
 }
 
 body {

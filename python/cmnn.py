@@ -12,8 +12,8 @@ print('| Penn State University      |')
 print('+----------------------------+')
 print()
 
-size = [784, 128, 10]
-epoch_count = 3
+size = [784, 128, 64, 10]
+epoch_count = 10
 learning_rate = 0.001
 
 print(f'✨ Creating network with config: size={size} epochs={epoch_count} eta={learning_rate}')

@@ -14,6 +14,7 @@ import { NetworkConfigToolComponent } from './components/tools/network-config-to
 import { DrawToolComponent } from './components/tools/draw-tool/draw-tool.component';
 import { RoundedButtonComponent } from './components/buttons/rounded-button/rounded-button.component';
 import {FormsModule} from '@angular/forms';
+import { SwitchComponent } from './components/buttons/switch/switch.component';
 
 @NgModule({
   declarations: [
@@ -26,6 +27,7 @@ import {FormsModule} from '@angular/forms';
     NetworkConfigToolComponent,
     DrawToolComponent,
     RoundedButtonComponent,
+    SwitchComponent,
   ],
   imports: [
     BrowserModule,

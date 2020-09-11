@@ -26,11 +26,11 @@ export class NetworkVisualComponent implements OnInit {
     this.context = this.canvas.getContext('2d');
     this.currentImage = [];
     this.drawNetwork();
-    this.neuralNetworkService.imageEmitter.subscribe((image) => {
+    this.neuralNetworkService.sendMNISTImage.subscribe((image) => {
       this.currentImage = image;
       this.drawNetwork();
     });
-    this.neuralNetworkService.updateNetworkImage.subscribe(() => {
+    this.neuralNetworkService.updateNetworkVisual.subscribe(() => {
       this.drawNetwork();
     });
   }
@@ -98,13 +98,14 @@ export class NetworkVisualComponent implements OnInit {
   }
 
   drawCurrentMNISTImage(): void {
+    this.context.fillStyle = 'black';
+    this.context.beginPath();
+    this.context.arc(600, 2000, 550, 0, 2 * Math.PI);
+    this.context.fill();
+    this.context.closePath();
     for (let px = 0; px < this.currentImage.length; px++) {
       const intensity = this.currentImage[px];
-      if (intensity < 150) {
-        this.context.fillStyle = 'transparent';
-      } else {
-        this.context.fillStyle = 'white';
-      }
+      this.context.fillStyle = 'rgb(' + intensity + ',' + intensity + ',' + intensity + ')';
       this.context.fillRect(180 + (px % 28) * 30,
         1580 + Math.floor(px / 28) * 30, 30, 30);
     }

@@ -52,7 +52,7 @@ export class NetworkConfigToolComponent implements OnInit {
       this.neuralNetworkService.network.configureNetworkFromJSON(
         JSON.parse(fileReader.result as string));
       this.initFields();
-      this.neuralNetworkService.updateNetworkImage.emit();
+      this.neuralNetworkService.updateNetworkVisual.emit();
     };
     fileReader.readAsText(file);
   }
@@ -106,7 +106,7 @@ export class NetworkConfigToolComponent implements OnInit {
       this.neuralNetworkService.network = new NeuralNetwork(this.getNetworkSize(),
         +this.epochCount, +this.learningRate);
     }
-    this.neuralNetworkService.updateNetworkImage.emit();
+    this.neuralNetworkService.updateNetworkVisual.emit();
   }
 
   isTraining(): boolean {

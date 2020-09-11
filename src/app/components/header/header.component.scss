@@ -1,5 +1,18 @@
 @import '../../../variables';
 
+app-switch {
+  @media (min-width: $mobile-cutoff) {
+    @include center;
+  }
+
+  @media (max-width: $mobile-cutoff) {
+    position: relative;
+    float: right;
+    height: 100%;
+    top: 0.75em;
+  }
+}
+
 header {
   position: relative;
   box-sizing: border-box;

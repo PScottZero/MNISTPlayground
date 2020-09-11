@@ -1,0 +1,8 @@
+<div id="switch" (click)="toggleSlider()">
+  <div id="slider" [class.left]="!useFashionMNIST()"
+       [class.right]="useFashionMNIST()" [class.disabled]="isTraining()">
+    <div id="selected">
+      <img src="assets/icons/{{getSelectedImage()}}.svg" alt="switch icon">
+    </div>
+  </div>
+</div>
