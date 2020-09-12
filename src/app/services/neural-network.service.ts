@@ -1,14 +1,16 @@
 import {EventEmitter, Injectable} from '@angular/core';
 import {MnistService} from './mnist.service';
-import {math} from '../classes/mathjs';
 import {MessageService} from './message.service';
 import {NeuralNetwork} from '../classes/NeuralNetwork';
+import {math} from '../classes/mathjs';
 
 const INPUT_SIZE = 784;
 const OUTPUT_SIZE = 10;
 const DEFAULT_SIZE = [INPUT_SIZE, 16, 16, OUTPUT_SIZE];
 const DEFAULT_EPOCH_COUNT = 3;
 const DEFAULT_LEARNING_RATE = 0.01;
+const REDRAW_COUNT = 10;
+const DELAY = 1;
 
 @Injectable({
   providedIn: 'root'
@@ -33,6 +35,10 @@ export class NeuralNetworkService {
     this.mnistService.usingFashionMNIST = !this.mnistService.usingFashionMNIST;
   }
 
+  usingFashionMNIST(): boolean {
+    return this.mnistService.usingFashionMNIST;
+  }
+
   async trainNetwork(): Promise<void> {
     this.totalCompleted = 0;
     for (let epochNo = 0; epochNo < this.network.epochCount; epochNo++) {
@@ -44,14 +50,13 @@ export class NeuralNetworkService {
         correct += (this.checkCorrect(image.getLabel())) ? 1 : 0;
         this.backPropagation(image.getLabel());
         this.updateNetwork();
-        if (completed % 20 === 0) {
-          await this.delay(8);
+        if (completed % REDRAW_COUNT === 0) {
+          await this.delay(DELAY);
         }
         completed++;
         this.totalCompleted++;
-        const accuracy = math.round((correct / completed) * 100, 2);
-        this.messageService.setEpochMessage(epochNo + 1, this.network.epochCount, accuracy,
-          completed, this.mnistService.getTrainData().length);
+        this.messageService.setEpochMessage(epochNo + 1, this.network.epochCount,
+          this.getAccuracy(correct, completed), completed, this.mnistService.getTrainData().length);
       }
     }
   }
@@ -62,12 +67,12 @@ export class NeuralNetworkService {
     for (const image of this.mnistService.getTestData()) {
       this.forwardPropagation(image.getImage());
       correct += this.checkCorrect(image.getLabel()) ? 1 : 0;
-      if (completed % 20 === 0) {
-        await this.delay(8);
+      if (completed % REDRAW_COUNT === 0) {
+        await this.delay(DELAY);
       }
       completed++;
       this.totalCompleted++;
-      this.network.accuracy = math.round((correct / completed) * 100, 2);
+      this.network.accuracy = this.getAccuracy(correct, completed);
       this.messageService.setTrainingMessage(this.network.accuracy, completed,
         this.mnistService.getTestData().length);
     }
@@ -107,6 +112,10 @@ export class NeuralNetworkService {
 
   checkCorrect(label: number): boolean {
     return label === this.getGuess();
+  }
+
+  getAccuracy(correct: number, completed: number): number {
+    return math.round((correct / completed) * 100, 2);
   }
 
   getProgress(): number {

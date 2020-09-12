@@ -8,8 +8,6 @@ export class MessageService {
   progress: string;
   accuracy: string;
 
-  constructor() {}
-
   setEpochMessage(epochNo, epochTotal, accuracy, completed, total): void {
     this.status = `Epoch ${epochNo} of ${epochTotal}`;
     this.setProgressAndAccuracy(accuracy, completed, total);

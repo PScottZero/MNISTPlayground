@@ -1,7 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import {HttpClientModule} from '@angular/common/http';
-import {MatProgressBarModule} from '@angular/material/progress-bar';
 
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './components/header/header.component';
@@ -33,7 +32,6 @@ import { SwitchComponent } from './components/buttons/switch/switch.component';
     BrowserModule,
     HttpClientModule,
     BrowserAnimationsModule,
-    MatProgressBarModule,
     FormsModule
   ],
   providers: [],

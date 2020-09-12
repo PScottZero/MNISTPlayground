@@ -1,5 +1,4 @@
 import {Component} from '@angular/core';
-import {MnistService} from '../../../services/mnist.service';
 import {NeuralNetworkService} from '../../../services/neural-network.service';
 
 @Component({
@@ -8,8 +7,7 @@ import {NeuralNetworkService} from '../../../services/neural-network.service';
   styleUrls: ['./switch.component.scss']
 })
 export class SwitchComponent {
-  constructor(private neuralNetworkService: NeuralNetworkService,
-              private mnistService: MnistService) {}
+  constructor(private neuralNetworkService: NeuralNetworkService) {}
 
   toggleSlider(): void {
     if (!this.isTraining()) {
@@ -23,7 +21,7 @@ export class SwitchComponent {
   }
 
   usingFashionMNIST(): boolean {
-    return this.mnistService.usingFashionMNIST;
+    return this.neuralNetworkService.usingFashionMNIST();
   }
 
   getSelectedImage(): string {
