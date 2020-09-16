@@ -8,11 +8,12 @@ const NEURON_OFF = [21, 193, 255];
 const NEURON_ON = [0, 233, 113];
 const WEIGHT_LOW = [105, 215, 255];
 const WEIGHT_HIGH = [115, 240, 176];
-const PADDING = 50;
-const INPUT_RADIUS = 600;
-const OUTPUT_RADIUS = 177.5;
-const INNER_INPUT_RADIUS = 550;
-const FASHION_OUTPUT_WIDTH = 800;
+const PADDING = 25;
+const INPUT_RADIUS = 300;
+const OUTPUT_RADIUS = 88.75;
+const INNER_INPUT_RADIUS = 275;
+const FASHION_OUTPUT_WIDTH = 400;
+const WEIGHT_SIZE = 7;
 
 @Component({
   selector: 'app-network',
@@ -111,13 +112,13 @@ export class NetworkVisualComponent implements OnInit {
   drawOutputLabels(): void {
     this.neuronCoords[this.neuronCoords.length - 1].forEach((coord, coordIndex) => {
       this.context.fillStyle = 'white';
-      this.context.font = '200px Arial';
+      this.context.font = '100px Arial';
       this.context.textAlign = 'center';
 
       if (!this.mnistService.usingFashionMNIST) {
-        this.context.fillText(coordIndex.toString(), coord[0], coord[1] + 70);
+        this.context.fillText(coordIndex.toString(), coord[0], coord[1] + 35);
       } else {
-        this.context.fillText(FASHION_LABELS[coordIndex], coord[0] + FASHION_OUTPUT_WIDTH / 2, coord[1] + 70);
+        this.context.fillText(FASHION_LABELS[coordIndex], coord[0] + FASHION_OUTPUT_WIDTH / 2, coord[1] + 35);
       }
     });
   }
@@ -125,14 +126,14 @@ export class NetworkVisualComponent implements OnInit {
   drawCurrentMNISTImage(): void {
     this.context.fillStyle = 'black';
     this.context.beginPath();
-    this.context.arc(600, 2000, INNER_INPUT_RADIUS, 0, 2 * Math.PI);
+    this.context.arc(INPUT_RADIUS, 1000, INNER_INPUT_RADIUS, 0, 2 * Math.PI);
     this.context.fill();
     this.context.closePath();
     for (let px = 0; px < this.currentImage.length; px++) {
       const intensity = this.currentImage[px];
       this.context.fillStyle = 'rgb(' + intensity + ',' + intensity + ',' + intensity + ')';
-      this.context.fillRect(222 + (px % 28) * 27,
-        1622 + Math.floor(px / 28) * 27, 27, 27);
+      this.context.fillRect(111 + (px % 28) * 13.5,
+        811 + Math.floor(px / 28) * 13.5, 13.5, 13.5);
     }
   }
 
@@ -145,7 +146,7 @@ export class NetworkVisualComponent implements OnInit {
         for (let neuronNext = 0; neuronNext < this.neuronCoords[layerNo + 1].length; neuronNext++) {
           const percent = (layerNo !== 0) ? (weights[neuronNext][neuron] - min) / (max - min) : 0;
           this.context.strokeStyle = this.getColor(WEIGHT_LOW, WEIGHT_HIGH, percent);
-          this.context.lineWidth = 14;
+          this.context.lineWidth = WEIGHT_SIZE;
           this.context.beginPath();
           this.context.moveTo(this.neuronCoords[layerNo][neuron][0],
             this.neuronCoords[layerNo][neuron][1]);

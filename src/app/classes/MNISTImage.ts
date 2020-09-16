@@ -1,4 +1,4 @@
-export const FASHION_LABELS = ['TShirt', 'Trouser', 'Pullover', 'Dress', 'Coat',
+export const FASHION_LABELS = ['T-Shirt', 'Trouser', 'Pullover', 'Dress', 'Coat',
   'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Boot'];
 
 export class MNISTImage {
