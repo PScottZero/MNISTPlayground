@@ -61,4 +61,13 @@ export class MnistService {
       this.digitTrain = shuffledData;
     }
   }
+
+  getRandomTestImage(): number[] {
+    const randIndex = math.randomInt(0, this.getTestData().length);
+    if (this.usingFashionMNIST) {
+      return this.fashionTest[randIndex].getImage();
+    } else {
+      return this.digitTest[randIndex].getImage();
+    }
+  }
 }

@@ -1,6 +1,7 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {NeuralNetworkService} from '../../../services/neural-network.service';
 import {FASHION_LABELS} from '../../../classes/MNISTImage';
+import {MnistService} from "../../../services/mnist.service";
 
 @Component({
   selector: 'app-draw-tool',
@@ -13,7 +14,8 @@ export class DrawToolComponent implements OnInit {
   drawingEnabled: boolean;
   guess: string;
 
-  constructor(private neuralNetworkService: NeuralNetworkService) { }
+  constructor(private neuralNetworkService: NeuralNetworkService,
+              private mnistService: MnistService) { }
 
   ngOnInit(): void {
     this.guess = 'N/A';
@@ -58,6 +60,15 @@ export class DrawToolComponent implements OnInit {
   clearDrawing(): void {
     const ctx = this.canvas.nativeElement.getContext('2d');
     ctx.clearRect(0, 0, 28, 28);
+  }
+
+  getRandomImage(): void {
+    const image = this.mnistService.getRandomTestImage();
+    for (let px = 0; px < image.length; px++) {
+      const ctx = this.canvas.nativeElement.getContext('2d');
+      ctx.fillStyle = 'rgb(' + image[px] + ',' + image[px] + ',' + image[px] + ')';
+      ctx.fillRect(px % 28, Math.floor(px / 28), 1, 1);
+    }
   }
 
   mouseDraw(event): void {

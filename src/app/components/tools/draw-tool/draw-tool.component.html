@@ -5,6 +5,7 @@
   <app-rounded-button id="test-button" [text]="'Test'" (click)="testDrawing()"
                       [disabled]="isTraining()"></app-rounded-button>
   <app-rounded-button id="clear-button" [text]="'Clear'" (click)="clearDrawing()"></app-rounded-button>
+  <app-rounded-button id="random-image-button" [text]="'Random'" (click)="getRandomImage()"></app-rounded-button>
   <div id="guess">
     <p [class.smaller-font]="usingFashionMNIST()">{{guess}}</p>
   </div>

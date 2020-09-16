@@ -4,7 +4,7 @@
   @include tool-style;
   grid-template-rows: $quarter $quarter $quarter $quarter;
   grid-template-columns: auto 12em;
-  grid-template-areas: 'test draw' 'clear draw' 'guess draw' 'guess draw';
+  grid-template-areas: 'test draw' 'random draw' 'clear draw' 'guess draw';
 }
 
 #test-button {
@@ -13,6 +13,10 @@
 
 #clear-button {
   grid-area: clear;
+}
+
+#random-image-button {
+  grid-area: random;
 }
 
 canvas {
@@ -28,9 +32,9 @@ canvas {
   grid-area: guess;
   box-sizing: border-box;
   background: $color-inactive;
-  border-radius: 0.5em;
+  border-radius: 2em;
   text-align: center;
-  font-size: 32px;
+  font-size: 20px;
   height: auto;
 
   p {
@@ -39,8 +43,4 @@ canvas {
     top: 50%;
     transform: translate(-50%, -50%);
   }
-}
-
-.smaller-font {
-  font-size: 20px;
 }

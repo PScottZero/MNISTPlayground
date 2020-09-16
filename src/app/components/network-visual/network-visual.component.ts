@@ -132,8 +132,8 @@ export class NetworkVisualComponent implements OnInit {
     for (let px = 0; px < this.currentImage.length; px++) {
       const intensity = this.currentImage[px];
       this.context.fillStyle = 'rgb(' + intensity + ',' + intensity + ',' + intensity + ')';
-      this.context.fillRect(111 + (px % 28) * 13.5,
-        811 + Math.floor(px / 28) * 13.5, 13.5, 13.5);
+      this.context.fillRect(118 + (px % 28) * 13,
+        818 + Math.floor(px / 28) * 13, 13, 13);
     }
   }
 
