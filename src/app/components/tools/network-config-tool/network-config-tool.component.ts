@@ -72,8 +72,6 @@ export class NetworkConfigToolComponent implements OnInit {
     const fileReader = new FileReader();
     fileReader.onload = () => {
       this.parseNetworkSaveData(JSON.parse(fileReader.result as string));
-      this.initFields();
-      this.neuralNetworkService.updateNetworkVisual.emit();
     };
     fileReader.readAsText(file);
     this.loadPromptVisible = false;
@@ -90,6 +88,7 @@ export class NetworkConfigToolComponent implements OnInit {
     network.accuracy = networkSave.accuracy;
     this.neuralNetworkService.network = network;
     this.neuralNetworkService.updateNetworkVisual.emit();
+    this.initFields();
   }
 
   validateInput(): boolean {
