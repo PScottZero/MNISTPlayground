@@ -8,8 +8,8 @@ class MNISTData:
 
     def __load_data(self):
         try:
-            mnist_train = open('mnist_train.csv', 'r').readlines()
-            mnist_test = open('mnist_test.csv', 'r').readlines()
+            mnist_train = open('fashion-mnist_train.csv', 'r').readlines()
+            mnist_test = open('fashion-mnist_test.csv', 'r').readlines()
             self.train_data = self.__parse_csv(mnist_train)
             self.test_data = self.__parse_csv(mnist_test)
         except FileNotFoundError:

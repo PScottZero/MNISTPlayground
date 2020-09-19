@@ -1,6 +1,9 @@
-import {Component, EventEmitter, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {NeuralNetworkService} from '../../../services/neural-network.service';
 import {NeuralNetwork} from '../../../classes/NeuralNetwork';
+import {NetworkSaveData} from '../../../classes/NetworkSaveData';
+import digitNetwork from '../../../../assets/pretrained/digitNetwork.json';
+import fashionNetwork from '../../../../assets/pretrained/fashionNetwork.json';
 
 @Component({
   selector: 'app-network-config-tool',
@@ -8,18 +11,24 @@ import {NeuralNetwork} from '../../../classes/NeuralNetwork';
   styleUrls: ['./network-config-tool.component.scss']
 })
 export class NetworkConfigToolComponent implements OnInit {
-  loadNetworkPrompt: HTMLElement;
+  fileExplorer: HTMLElement;
   size: string;
   epochCount: string;
   learningRate: string;
   inputValidity: boolean[];
+  loadPromptVisible: boolean;
 
   constructor(private neuralNetworkService: NeuralNetworkService) { }
 
   ngOnInit(): void {
-    this.loadNetworkPrompt = document.getElementById('load-network');
+    this.fileExplorer = document.getElementById('explorer');
+    this.loadPromptVisible = false;
     this.initFields();
     this.validateInput();
+  }
+
+  toggleLoadPrompt(): void {
+    this.loadPromptVisible = !this.loadPromptVisible;
   }
 
   initFields(): void {
@@ -31,30 +40,56 @@ export class NetworkConfigToolComponent implements OnInit {
   }
 
   saveNetwork(): void {
+    const prefix = this.neuralNetworkService.usingFashionMNIST() ? 'mnist-fashion-' : 'mnist-digit-';
     const anchor = document.createElement('a');
     document.body.appendChild(anchor);
     anchor.setAttribute('style', 'display: none;');
-    this.neuralNetworkService.network.removePrevLayers();
-    const url = window.URL.createObjectURL(new Blob([JSON.stringify(this.neuralNetworkService.network)],
+    const url = window.URL.createObjectURL(new Blob([JSON.stringify(this.createNetworkSaveData())],
       {type: 'octet/stream'}));
-    this.neuralNetworkService.network.restorePrevLayers();
     anchor.setAttribute('href', url);
     anchor.setAttribute('download',
-      'mnist-network-' + Math.round(this.neuralNetworkService.network.accuracy) + '.json');
+      prefix + Math.round(this.neuralNetworkService.network.accuracy) + '.json');
     anchor.click();
     window.URL.revokeObjectURL(url);
   }
 
-  loadNetwork(event): void {
+  createNetworkSaveData(): NetworkSaveData {
+    const layerSaveData = [];
+    for (const layer of this.neuralNetworkService.network.layers) {
+      layerSaveData.push(layer.getLayerSaveData());
+    }
+    layerSaveData.shift();
+    return new NetworkSaveData(
+      layerSaveData,
+      this.neuralNetworkService.network.accuracy,
+      this.neuralNetworkService.network.epochCount,
+      this.neuralNetworkService.network.eta
+    );
+  }
+
+  loadNetworkJSON(event): void {
     const file = event.target.files[0];
     const fileReader = new FileReader();
     fileReader.onload = () => {
-      this.neuralNetworkService.network.configureNetworkFromJSON(
-        JSON.parse(fileReader.result as string));
+      this.parseNetworkSaveData(JSON.parse(fileReader.result as string));
       this.initFields();
       this.neuralNetworkService.updateNetworkVisual.emit();
     };
     fileReader.readAsText(file);
+    this.loadPromptVisible = false;
+  }
+
+  parseNetworkSaveData(networkSave: NetworkSaveData): void {
+    const size = networkSave.layers.slice().map((layer) => layer.size);
+    size.unshift(784);
+    const network = new NeuralNetwork(size, networkSave.epochCount, networkSave.eta);
+    for (let i = 1; i < network.layers.length; i++) {
+      network.layers[i].weights = networkSave.layers[i - 1].weights;
+      network.layers[i].biases = networkSave.layers[i - 1].biases;
+    }
+    network.accuracy = networkSave.accuracy;
+    this.neuralNetworkService.network = network;
+    this.neuralNetworkService.updateNetworkVisual.emit();
   }
 
   validateInput(): boolean {
@@ -111,5 +146,15 @@ export class NetworkConfigToolComponent implements OnInit {
 
   isTraining(): boolean {
     return this.neuralNetworkService.isTraining;
+  }
+
+  getServerCopyAccuracy(): number {
+    return this.neuralNetworkService.usingFashionMNIST() ? fashionNetwork.accuracy : digitNetwork.accuracy;
+  }
+
+  loadPretrainedNetwork(): void {
+    this.neuralNetworkService.usingFashionMNIST() ?
+      this.parseNetworkSaveData(fashionNetwork) : this.parseNetworkSaveData(digitNetwork);
+    this.loadPromptVisible = false;
   }
 }

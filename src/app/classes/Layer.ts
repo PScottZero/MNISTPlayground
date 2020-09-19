@@ -1,4 +1,5 @@
 import {math} from './mathjs';
+import {LayerSaveData} from "./LayerSaveData";
 
 export class Layer {
   weights: number[][];
@@ -59,5 +60,9 @@ export class Layer {
 
   reluDeriv(x: number): number {
     return (x <= 0) ? 0 : 1;
+  }
+
+  getLayerSaveData(): LayerSaveData {
+    return new LayerSaveData(this.size, this.weights, this.biases);
   }
 }

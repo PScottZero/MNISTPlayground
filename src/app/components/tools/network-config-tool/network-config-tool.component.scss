@@ -11,6 +11,16 @@
     'load save set';
 }
 
+#load-network {
+  @include tool-style;
+  grid-template-columns: 100%;
+  grid-template-rows: $quarter $quarter $quarter $quarter;
+  grid-template-areas:
+    'pre-trained'
+    'load-json'
+    'cancel';
+}
+
 label {
   font-size: 20px;
   line-height: 2;
@@ -49,6 +59,19 @@ input {
 
 #set {
   grid-area: set;
+}
+
+#server-accuracy {
+  position: relative;
+  background: $color-inactive;
+  border-radius: 2em;
+  font-size: 20px;
+  text-align: center;
+
+  p {
+    @include center;
+    width: 100%;
+  }
 }
 
 .not-valid {

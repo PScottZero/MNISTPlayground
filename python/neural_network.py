@@ -7,6 +7,7 @@ class MNISTNeuralNetwork:
         self.epoch_count = epoch_count
         self.layers = []
         self.eta = eta
+        self.accuracy = 0
         self.__createNetwork()
 
     def __createNetwork(self):
@@ -66,6 +67,7 @@ class MNISTNeuralNetwork:
                 correct += 1
             accuracy = np.multiply(correct / (i + 1), 100)
             self.__print_testing_progress(i + 1, len(mnist_data.test_data), accuracy)
+            self.accuracy = round(accuracy, 2)
         print()
 
     def __print_training_progress(self, epoch_no, completed, total, accuracy):

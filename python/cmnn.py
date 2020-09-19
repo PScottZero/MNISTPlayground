@@ -1,5 +1,6 @@
 from neural_network import MNISTNeuralNetwork
 from mnist_data import MNISTData
+from network_to_json import network_to_json
 
 print()
 print('+----------------------------+')
@@ -12,7 +13,7 @@ print('| Penn State University      |')
 print('+----------------------------+')
 print()
 
-size = [784, 128, 64, 10]
+size = [784, 128, 10]
 epoch_count = 10
 learning_rate = 0.001
 
@@ -31,4 +32,6 @@ if (len(mnist.train_data) > 0):
     model.train(mnist)
     print('🧪 Testing network')
     model.test(mnist)
+    print('💾 Saving network config')
+    network_to_json(model)
     print('😃 Complete')

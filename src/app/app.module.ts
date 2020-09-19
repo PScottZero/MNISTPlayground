@@ -26,7 +26,7 @@ import { SwitchComponent } from './components/buttons/switch/switch.component';
     NetworkConfigToolComponent,
     DrawToolComponent,
     RoundedButtonComponent,
-    SwitchComponent,
+    SwitchComponent
   ],
   imports: [
     BrowserModule,

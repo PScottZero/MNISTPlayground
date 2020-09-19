@@ -46,3 +46,5 @@ testem.log
 Thumbs.db
 python/mnist_train.csv
 python/mnist_test.csv
+python/fashion-mnist_test.csv
+python/fashion-mnist_train.csv
