@@ -1,12 +1,12 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
-import {NeuralNetworkService} from '../../../services/neural-network.service';
-import {FASHION_LABELS} from '../../../classes/MNISTImage';
-import {MnistService} from "../../../services/mnist.service";
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { NeuralNetworkService } from '../../../services/neural-network.service';
+import { FASHION_LABELS } from '../../../classes/MNISTImage';
+import { MnistService } from '../../../services/mnist.service';
 
 @Component({
   selector: 'app-draw-tool',
   templateUrl: './draw-tool.component.html',
-  styleUrls: ['./draw-tool.component.scss']
+  styleUrls: ['./draw-tool.component.scss'],
 })
 export class DrawToolComponent implements OnInit {
   @ViewChild('drawing')
@@ -14,8 +14,10 @@ export class DrawToolComponent implements OnInit {
   drawingEnabled: boolean;
   guess: string;
 
-  constructor(private neuralNetworkService: NeuralNetworkService,
-              private mnistService: MnistService) { }
+  constructor(
+    private neuralNetworkService: NeuralNetworkService,
+    private mnistService: MnistService
+  ) {}
 
   ngOnInit(): void {
     this.guess = 'N/A';
@@ -43,10 +45,14 @@ export class DrawToolComponent implements OnInit {
 
   testDrawing(): void {
     if (!this.isTraining()) {
-      const image = this.canvas.nativeElement.getContext('2d').getImageData(0, 0, 28, 28);
+      const image = this.canvas.nativeElement
+        .getContext('2d')
+        .getImageData(0, 0, 28, 28);
       const imageArray = [];
       for (let i = 0; i < image.data.length; i += 4) {
-        imageArray.push((image.data[i] + image.data[i + 1] + image.data[i + 2]) / 3);
+        imageArray.push(
+          (image.data[i] + image.data[i + 1] + image.data[i + 2]) / 3
+        );
       }
       this.neuralNetworkService.forwardPropagation(imageArray);
       if (this.neuralNetworkService.usingFashionMNIST()) {
@@ -66,7 +72,8 @@ export class DrawToolComponent implements OnInit {
     const image = this.mnistService.getRandomTestImage();
     for (let px = 0; px < image.length; px++) {
       const ctx = this.canvas.nativeElement.getContext('2d');
-      ctx.fillStyle = 'rgb(' + image[px] + ',' + image[px] + ',' + image[px] + ')';
+      ctx.fillStyle =
+        'rgb(' + image[px] + ',' + image[px] + ',' + image[px] + ')';
       ctx.fillRect(px % 28, Math.floor(px / 28), 1, 1);
     }
   }
@@ -87,7 +94,12 @@ export class DrawToolComponent implements OnInit {
       const mouseX = x - bound.x;
       const mouseY = y - bound.y;
       ctx.fillStyle = 'white';
-      ctx.fillRect(Math.floor(mouseX / ratio), Math.floor(mouseY / ratio), 2, 2);
+      ctx.fillRect(
+        Math.floor(mouseX / ratio),
+        Math.floor(mouseY / ratio),
+        2,
+        2
+      );
     }
   }
 }

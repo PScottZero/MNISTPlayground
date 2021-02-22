@@ -1,9 +1,13 @@
 <header>
-  <img src="assets/images/logo.svg" alt="MNIST Playground">
+  <img src="assets/images/logo.svg" alt="MNIST Playground" />
   <app-switch></app-switch>
   <nav>
-    <app-icon-button *ngFor="let button of buttonList" [icon]="button.icon"
-                     [link]="button.link" [color]="button.color">
+    <app-icon-button
+      *ngFor="let button of buttonList"
+      [icon]="button.icon"
+      [link]="button.link"
+      [color]="button.color"
+    >
     </app-icon-button>
   </nav>
 </header>

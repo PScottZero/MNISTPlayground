@@ -1,12 +1,32 @@
 <div id="draw-tool">
-  <canvas #drawing width="28" height="28" (mousedown)="enableDrawing()" (mouseup)="disableDrawing()"
-          (mousemove)="mouseDraw($event)" (touchstart)="enableDrawing()" (touchend)="disableDrawing()"
-          (touchmove)="touchDraw($event)"></canvas>
-  <app-rounded-button id="test-button" [text]="'Test'" (click)="testDrawing()"
-                      [disabled]="isTraining()"></app-rounded-button>
-  <app-rounded-button id="clear-button" [text]="'Clear'" (click)="clearDrawing()"></app-rounded-button>
-  <app-rounded-button id="random-image-button" [text]="'Random'" (click)="getRandomImage()"></app-rounded-button>
+  <canvas
+    #drawing
+    width="28"
+    height="28"
+    (mousedown)="enableDrawing()"
+    (mouseup)="disableDrawing()"
+    (mousemove)="mouseDraw($event)"
+    (touchstart)="enableDrawing()"
+    (touchend)="disableDrawing()"
+    (touchmove)="touchDraw($event)"
+  ></canvas>
+  <app-rounded-button
+    id="test-button"
+    [text]="'Test'"
+    (click)="testDrawing()"
+    [disabled]="isTraining()"
+  ></app-rounded-button>
+  <app-rounded-button
+    id="clear-button"
+    [text]="'Clear'"
+    (click)="clearDrawing()"
+  ></app-rounded-button>
+  <app-rounded-button
+    id="random-image-button"
+    [text]="'Random'"
+    (click)="getRandomImage()"
+  ></app-rounded-button>
   <div id="guess">
-    <p [class.smaller-font]="usingFashionMNIST()">{{guess}}</p>
+    <p [class.smaller-font]="usingFashionMNIST()">{{ guess }}</p>
   </div>
 </div>

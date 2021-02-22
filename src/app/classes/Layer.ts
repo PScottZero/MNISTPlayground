@@ -1,5 +1,5 @@
-import {math} from './mathjs';
-import {LayerSaveData} from "./LayerSaveData";
+import { math } from './mathjs';
+import { LayerSaveData } from './LayerSaveData';
 
 export class Layer {
   weights: number[][];
@@ -25,9 +25,12 @@ export class Layer {
   }
 
   propagate(): void {
-    this.values = math.add(math.multiply(this.weights, this.prevLayer.activValues), this.biases);
+    this.values = math.add(
+      math.multiply(this.weights, this.prevLayer.activValues),
+      this.biases
+    );
     if (!this.isOutput) {
-      this.activValues = Array.from(this.values, x => this.relu(x));
+      this.activValues = Array.from(this.values, (x) => this.relu(x));
     } else {
       this.activValues = this.softmax();
     }
@@ -35,31 +38,42 @@ export class Layer {
 
   calculateGradient(expectedValues: number[]): void {
     if (!this.isOutput) {
-      const reluDeriv = Array.from(this.values, x => this.reluDeriv(x));
+      const reluDeriv = Array.from(this.values, (x) => this.reluDeriv(x));
       this.biasGradient = math.dotMultiply(reluDeriv, this.activGradient);
     } else {
       this.biasGradient = math.subtract(this.activValues, expectedValues);
     }
-    this.weightGradient = math.multiply(math.transpose([this.biasGradient]), [this.prevLayer.activValues]);
-    this.prevLayer.activGradient = math.multiply(math.transpose(this.weights), this.biasGradient);
+    this.weightGradient = math.multiply(math.transpose([this.biasGradient]), [
+      this.prevLayer.activValues,
+    ]);
+    this.prevLayer.activGradient = math.multiply(
+      math.transpose(this.weights),
+      this.biasGradient
+    );
   }
 
   update(eta: number): void {
-    this.weights = math.subtract(this.weights, math.multiply(eta, this.weightGradient));
-    this.biases = math.subtract(this.biases, math.multiply(eta, this.biasGradient));
+    this.weights = math.subtract(
+      this.weights,
+      math.multiply(eta, this.weightGradient)
+    );
+    this.biases = math.subtract(
+      this.biases,
+      math.multiply(eta, this.biasGradient)
+    );
   }
 
   softmax(): number[] {
     const denom = math.sum(math.exp(this.values));
-    return Array.from(this.values, x => math.divide(math.exp(x), denom));
+    return Array.from(this.values, (x) => math.divide(math.exp(x), denom));
   }
 
   relu(x: number): number {
-    return (x < 0) ? 0 : x;
+    return x < 0 ? 0 : x;
   }
 
   reluDeriv(x: number): number {
-    return (x <= 0) ? 0 : 1;
+    return x <= 0 ? 0 : 1;
   }
 
   getLayerSaveData(): LayerSaveData {

@@ -1,32 +1,73 @@
 <div id="network-config" *ngIf="!loadPromptVisible">
   <div id="network-size-input">
     <label for="network-size">Network Size:</label>
-    <input [(ngModel)]="size" id="network-size" [class.not-valid]="!inputValidity[0]" type="text">
+    <input
+      [(ngModel)]="size"
+      id="network-size"
+      [class.not-valid]="!inputValidity[0]"
+      type="text"
+    />
   </div>
   <div id="epoch-count-input">
     <label for="epoch-count">Epoch Count:</label>
-    <input [(ngModel)]="epochCount" id="epoch-count" [class.not-valid]="!inputValidity[1]" type="text">
+    <input
+      [(ngModel)]="epochCount"
+      id="epoch-count"
+      [class.not-valid]="!inputValidity[1]"
+      type="text"
+    />
   </div>
   <div id="learning-rate-input">
     <label for="learning-rate">Learning Rate:</label>
-    <input [(ngModel)]="learningRate" id="learning-rate" [class.not-valid]="!inputValidity[2]" type="text">
+    <input
+      [(ngModel)]="learningRate"
+      id="learning-rate"
+      [class.not-valid]="!inputValidity[2]"
+      type="text"
+    />
   </div>
-  <app-rounded-button id="load" [text]="'Load'" (click)="toggleLoadPrompt()"
-                      [disabled]="isTraining()"></app-rounded-button>
-  <app-rounded-button id="save" [text]="'Save'" (click)="saveNetwork()"
-                      [disabled]="isTraining()"></app-rounded-button>
-  <app-rounded-button id="set" [text]="'Set'" (click)="setNetworkConfig()"
-                      [disabled]="isTraining()"></app-rounded-button>
+  <app-rounded-button
+    id="load"
+    [text]="'Load'"
+    (click)="toggleLoadPrompt()"
+    [disabled]="isTraining()"
+  ></app-rounded-button>
+  <app-rounded-button
+    id="save"
+    [text]="'Save'"
+    (click)="saveNetwork()"
+    [disabled]="isTraining()"
+  ></app-rounded-button>
+  <app-rounded-button
+    id="set"
+    [text]="'Set'"
+    (click)="setNetworkConfig()"
+    [disabled]="isTraining()"
+  ></app-rounded-button>
 </div>
 <div id="load-network" *ngIf="loadPromptVisible">
   <div id="server-accuracy">
-    <p>Server Copy Accuracy: {{this.getServerCopyAccuracy()}}%</p>
+    <p>Server Copy Accuracy: {{ this.getServerCopyAccuracy() }}%</p>
   </div>
-  <app-rounded-button [text]="'Load From Server'" [disabled]="isTraining()"
-                      (click)="loadPretrainedNetwork()"></app-rounded-button>
-  <app-rounded-button [text]="'Load From Computer'" [disabled]="isTraining()"
-                      (click)="fileExplorer.click()"></app-rounded-button>
-  <app-rounded-button [text]="'Cancel'"
-                      (click)="toggleLoadPrompt()"></app-rounded-button>
+  <app-rounded-button
+    [text]="'Load From Server'"
+    [disabled]="isTraining()"
+    (click)="loadPretrainedNetwork()"
+  ></app-rounded-button>
+  <app-rounded-button
+    [text]="'Load From Computer'"
+    [disabled]="isTraining()"
+    (click)="fileExplorer.click()"
+  ></app-rounded-button>
+  <app-rounded-button
+    [text]="'Cancel'"
+    (click)="toggleLoadPrompt()"
+  ></app-rounded-button>
 </div>
-<input id="explorer" type="file" style="display: none;" (change)="loadNetworkJSON($event)" accept=".json">
+<input
+  id="explorer"
+  type="file"
+  style="display: none"
+  (change)="loadNetworkJSON($event)"
+  accept=".json"
+/>

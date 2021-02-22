@@ -1,14 +1,14 @@
-import {Component, OnInit} from '@angular/core';
-import {NeuralNetworkService} from '../../../services/neural-network.service';
-import {NeuralNetwork} from '../../../classes/NeuralNetwork';
-import {NetworkSaveData} from '../../../classes/NetworkSaveData';
+import { Component, OnInit } from '@angular/core';
+import { NeuralNetworkService } from '../../../services/neural-network.service';
+import { NeuralNetwork } from '../../../classes/NeuralNetwork';
+import { NetworkSaveData } from '../../../classes/NetworkSaveData';
 import digitNetwork from '../../../../assets/pretrained/digitNetwork.json';
 import fashionNetwork from '../../../../assets/pretrained/fashionNetwork.json';
 
 @Component({
   selector: 'app-network-config-tool',
   templateUrl: './network-config-tool.component.html',
-  styleUrls: ['./network-config-tool.component.scss']
+  styleUrls: ['./network-config-tool.component.scss'],
 })
 export class NetworkConfigToolComponent implements OnInit {
   fileExplorer: HTMLElement;
@@ -18,7 +18,7 @@ export class NetworkConfigToolComponent implements OnInit {
   inputValidity: boolean[];
   loadPromptVisible: boolean;
 
-  constructor(private neuralNetworkService: NeuralNetworkService) { }
+  constructor(private neuralNetworkService: NeuralNetworkService) {}
 
   ngOnInit(): void {
     this.fileExplorer = document.getElementById('explorer');
@@ -32,23 +32,32 @@ export class NetworkConfigToolComponent implements OnInit {
   }
 
   initFields(): void {
-    const size = this.neuralNetworkService.network.size
-      .slice(1, this.neuralNetworkService.network.size.length - 1);
+    const size = this.neuralNetworkService.network.size.slice(
+      1,
+      this.neuralNetworkService.network.size.length - 1
+    );
     this.size = size.toString();
     this.epochCount = this.neuralNetworkService.network.epochCount.toString();
     this.learningRate = this.neuralNetworkService.network.eta.toString();
   }
 
   saveNetwork(): void {
-    const prefix = this.neuralNetworkService.usingFashionMNIST() ? 'mnist-fashion-' : 'mnist-digit-';
+    const prefix = this.neuralNetworkService.usingFashionMNIST()
+      ? 'mnist-fashion-'
+      : 'mnist-digit-';
     const anchor = document.createElement('a');
     document.body.appendChild(anchor);
     anchor.setAttribute('style', 'display: none;');
-    const url = window.URL.createObjectURL(new Blob([JSON.stringify(this.createNetworkSaveData())],
-      {type: 'octet/stream'}));
+    const url = window.URL.createObjectURL(
+      new Blob([JSON.stringify(this.createNetworkSaveData())], {
+        type: 'octet/stream',
+      })
+    );
     anchor.setAttribute('href', url);
-    anchor.setAttribute('download',
-      prefix + Math.round(this.neuralNetworkService.network.accuracy) + '.json');
+    anchor.setAttribute(
+      'download',
+      prefix + Math.round(this.neuralNetworkService.network.accuracy) + '.json'
+    );
     anchor.click();
     window.URL.revokeObjectURL(url);
   }
@@ -80,7 +89,11 @@ export class NetworkConfigToolComponent implements OnInit {
   parseNetworkSaveData(networkSave: NetworkSaveData): void {
     const size = networkSave.layers.slice().map((layer) => layer.size);
     size.unshift(784);
-    const network = new NeuralNetwork(size, networkSave.epochCount, networkSave.eta);
+    const network = new NeuralNetwork(
+      size,
+      networkSave.epochCount,
+      networkSave.eta
+    );
     for (let i = 1; i < network.layers.length; i++) {
       network.layers[i].weights = networkSave.layers[i - 1].weights;
       network.layers[i].biases = networkSave.layers[i - 1].biases;
@@ -105,7 +118,10 @@ export class NetworkConfigToolComponent implements OnInit {
       this.inputValidity[1] = false;
       allInputsValid = false;
     }
-    if (Number.isNaN(+this.learningRate) || this.inputEmpty(this.learningRate)) {
+    if (
+      Number.isNaN(+this.learningRate) ||
+      this.inputEmpty(this.learningRate)
+    ) {
       this.inputValidity[2] = false;
       allInputsValid = false;
     }
@@ -119,7 +135,7 @@ export class NetworkConfigToolComponent implements OnInit {
   getNetworkSize(): number[] {
     let size;
     if (!this.inputEmpty(this.size)) {
-      size = this.size.split(',').map(layerSize => +layerSize);
+      size = this.size.split(',').map((layerSize) => +layerSize);
       size.unshift(784);
       size.push(10);
       for (let i = 1; i < size.length - 1; i++) {
@@ -137,8 +153,11 @@ export class NetworkConfigToolComponent implements OnInit {
 
   setNetworkConfig(): void {
     if (this.validateInput()) {
-      this.neuralNetworkService.network = new NeuralNetwork(this.getNetworkSize(),
-        +this.epochCount, +this.learningRate);
+      this.neuralNetworkService.network = new NeuralNetwork(
+        this.getNetworkSize(),
+        +this.epochCount,
+        +this.learningRate
+      );
     }
     this.neuralNetworkService.updateNetworkVisual.emit();
   }
@@ -148,12 +167,15 @@ export class NetworkConfigToolComponent implements OnInit {
   }
 
   getServerCopyAccuracy(): number {
-    return this.neuralNetworkService.usingFashionMNIST() ? fashionNetwork.accuracy : digitNetwork.accuracy;
+    return this.neuralNetworkService.usingFashionMNIST()
+      ? fashionNetwork.accuracy
+      : digitNetwork.accuracy;
   }
 
   loadPretrainedNetwork(): void {
-    this.neuralNetworkService.usingFashionMNIST() ?
-      this.parseNetworkSaveData(fashionNetwork) : this.parseNetworkSaveData(digitNetwork);
+    this.neuralNetworkService.usingFashionMNIST()
+      ? this.parseNetworkSaveData(fashionNetwork)
+      : this.parseNetworkSaveData(digitNetwork);
     this.loadPromptVisible = false;
   }
 }
