@@ -11,5 +11,9 @@
   <p id="progress">{{ getProgress() }}</p>
   <p id="accuracy">{{ getAccuracy() }}</p>
   <progress [value]="getPercentDone()" max="100"></progress>
-  <app-rounded-button id="stop-button" [text]="'Stop'" (click)="stop()"></app-rounded-button>
+  <app-rounded-button
+    id="stop-button"
+    [text]="'Stop'"
+    (click)="stop()"
+  ></app-rounded-button>
 </div>

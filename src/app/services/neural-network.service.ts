@@ -52,7 +52,11 @@ export class NeuralNetworkService {
 
   async trainNetwork(): Promise<void> {
     this.totalCompleted = 0;
-    epochLoop: for (let epochNo = 0; epochNo < this.network.epochCount; epochNo++) {
+    epochLoop: for (
+      let epochNo = 0;
+      epochNo < this.network.epochCount;
+      epochNo++
+    ) {
       this.mnistService.shuffle();
       let completed = 0;
       let correct = 0;
