@@ -52,7 +52,7 @@ export class NeuralNetworkService {
 
   async trainNetwork(): Promise<void> {
     this.totalCompleted = 0;
-    for (let epochNo = 0; epochNo < this.network.epochCount; epochNo++) {
+    epochLoop: for (let epochNo = 0; epochNo < this.network.epochCount; epochNo++) {
       this.mnistService.shuffle();
       let completed = 0;
       let correct = 0;
@@ -73,6 +73,9 @@ export class NeuralNetworkService {
           completed,
           this.mnistService.getTrainData().length
         );
+        if (!this.isTraining) {
+          break epochLoop;
+        }
       }
     }
   }
@@ -94,6 +97,9 @@ export class NeuralNetworkService {
         completed,
         this.mnistService.getTestData().length
       );
+      if (!this.isTraining) {
+        break;
+      }
     }
     this.totalCompleted = 0;
   }

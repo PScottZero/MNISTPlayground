@@ -37,12 +37,18 @@ export class TrainToolComponent {
     if (!this.isTraining()) {
       this.neuralNetworkService.isTraining = true;
       await this.neuralNetworkService.trainNetwork();
-      await this.neuralNetworkService.testNetwork();
+      if (this.isTraining()) {
+        await this.neuralNetworkService.testNetwork();
+      }
       this.neuralNetworkService.isTraining = false;
     }
   }
 
   isTraining(): boolean {
     return this.neuralNetworkService.isTraining;
+  }
+
+  stop(): void {
+    this.neuralNetworkService.isTraining = false;
   }
 }

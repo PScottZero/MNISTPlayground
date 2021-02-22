@@ -4,8 +4,8 @@
   @include tool-style;
   position: relative;
   grid-template-rows: $quarter $quarter $quarter $quarter;
-  grid-template-columns: 100%;
-  grid-template-areas: 'status' 'progress' 'accuracy' 'bar';
+  grid-template-columns: calc(100% - 9em) 8em;
+  grid-template-areas: 'status status' 'progress progress' 'accuracy accuracy' 'bar stop';
 }
 
 #status {
@@ -27,6 +27,10 @@
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
+}
+
+#stop-button {
+  grid-area: stop;
 }
 
 #network-accuracy {
