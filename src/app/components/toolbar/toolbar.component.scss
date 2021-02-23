@@ -56,7 +56,9 @@ app-draw-tool {
   bottom: 4em;
 }
 
-#configure-button, #train-button, #draw-button {
+#configure-button,
+#train-button,
+#draw-button {
   @media screen and (min-width: $mobile-cutoff) {
     display: none;
   }

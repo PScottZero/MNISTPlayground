@@ -1,5 +1,5 @@
-import {Layer} from './Layer';
-import {math} from './mathjs';
+import { Layer } from './Layer';
+import { math } from './mathjs';
 
 export class NeuralNetwork {
   size: number[];

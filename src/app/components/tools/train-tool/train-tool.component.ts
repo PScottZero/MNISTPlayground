@@ -1,15 +1,17 @@
 import { Component } from '@angular/core';
-import {NeuralNetworkService} from '../../../services/neural-network.service';
-import {MessageService} from '../../../services/message.service';
+import { NeuralNetworkService } from '../../../services/neural-network.service';
+import { MessageService } from '../../../services/message.service';
 
 @Component({
   selector: 'app-train-tool',
   templateUrl: './train-tool.component.html',
-  styleUrls: ['./train-tool.component.scss']
+  styleUrls: ['./train-tool.component.scss'],
 })
 export class TrainToolComponent {
-  constructor(private neuralNetworkService: NeuralNetworkService,
-              private messageService: MessageService) {}
+  constructor(
+    private neuralNetworkService: NeuralNetworkService,
+    private messageService: MessageService
+  ) {}
 
   getPercentDone(): number {
     return this.neuralNetworkService.getProgress();
@@ -35,12 +37,18 @@ export class TrainToolComponent {
     if (!this.isTraining()) {
       this.neuralNetworkService.isTraining = true;
       await this.neuralNetworkService.trainNetwork();
-      await this.neuralNetworkService.testNetwork();
+      if (this.isTraining()) {
+        await this.neuralNetworkService.testNetwork();
+      }
       this.neuralNetworkService.isTraining = false;
     }
   }
 
   isTraining(): boolean {
     return this.neuralNetworkService.isTraining;
+  }
+
+  stop(): void {
+    this.neuralNetworkService.isTraining = false;
   }
 }

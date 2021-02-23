@@ -1,7 +1,7 @@
-import {Component, OnInit} from '@angular/core';
-import {NeuralNetworkService} from '../../services/neural-network.service';
-import {MnistService} from '../../services/mnist.service';
-import {FASHION_LABELS} from '../../classes/MNISTImage';
+import { Component, OnInit } from '@angular/core';
+import { NeuralNetworkService } from '../../services/neural-network.service';
+import { MnistService } from '../../services/mnist.service';
+import { FASHION_LABELS } from '../../classes/MNISTImage';
 import * as math from 'mathjs';
 
 const NEURON_OFF = [21, 193, 255];
@@ -18,7 +18,7 @@ const WEIGHT_SIZE = 7;
 @Component({
   selector: 'app-network',
   templateUrl: './network-visual.component.html',
-  styleUrls: ['./network-visual.component.scss']
+  styleUrls: ['./network-visual.component.scss'],
 })
 export class NetworkVisualComponent implements OnInit {
   canvas: HTMLCanvasElement;
@@ -26,11 +26,15 @@ export class NetworkVisualComponent implements OnInit {
   currentImage: number[];
   neuronCoords: number[][][];
 
-  constructor(private neuralNetworkService: NeuralNetworkService,
-              private mnistService: MnistService) {}
+  constructor(
+    private neuralNetworkService: NeuralNetworkService,
+    private mnistService: MnistService
+  ) {}
 
   ngOnInit(): void {
-    this.canvas = document.getElementById('network-visual') as HTMLCanvasElement;
+    this.canvas = document.getElementById(
+      'network-visual'
+    ) as HTMLCanvasElement;
     this.context = this.canvas.getContext('2d');
     this.currentImage = [];
     this.drawNetwork();
@@ -59,14 +63,19 @@ export class NetworkVisualComponent implements OnInit {
     layers.forEach((layer, index) => {
       if (index !== 0) {
         let xVal: number;
-        if (this.mnistService.usingFashionMNIST && index === layers.length - 1) {
+        if (
+          this.mnistService.usingFashionMNIST &&
+          index === layers.length - 1
+        ) {
           xVal = this.canvas.width - FASHION_OUTPUT_WIDTH;
         } else if (index === layers.length - 1) {
           xVal = this.canvas.width - OUTPUT_RADIUS;
         } else {
           xVal = layerSpacing * index;
         }
-        this.neuronCoords.push(this.generateLayerCoords(xVal, layer.activValues.length));
+        this.neuronCoords.push(
+          this.generateLayerCoords(xVal, layer.activValues.length)
+        );
       }
     });
   }
@@ -91,14 +100,27 @@ export class NetworkVisualComponent implements OnInit {
         this.context.fillStyle = grad;
         if (layerIndex !== 0) {
           neuronRadius = this.getNeuronRadius(layer.activValues.length);
-          let percent = layer.activValues[coordIndex] / math.max(layer.activValues);
+          let percent =
+            layer.activValues[coordIndex] / math.max(layer.activValues);
           if (math.max(layer.activValues) === math.min(layer.activValues)) {
             percent = 0;
           }
-          this.context.fillStyle = this.getColor(NEURON_OFF, NEURON_ON, percent);
+          this.context.fillStyle = this.getColor(
+            NEURON_OFF,
+            NEURON_ON,
+            percent
+          );
         }
-        if (this.mnistService.usingFashionMNIST && layerIndex === layers.length - 1) {
-          this.context.fillRect(coord[0], coord[1] - neuronRadius, FASHION_OUTPUT_WIDTH, neuronRadius * 2);
+        if (
+          this.mnistService.usingFashionMNIST &&
+          layerIndex === layers.length - 1
+        ) {
+          this.context.fillRect(
+            coord[0],
+            coord[1] - neuronRadius,
+            FASHION_OUTPUT_WIDTH,
+            neuronRadius * 2
+          );
         } else {
           this.context.beginPath();
           this.context.arc(coord[0], coord[1], neuronRadius, 0, 2 * Math.PI);
@@ -110,17 +132,23 @@ export class NetworkVisualComponent implements OnInit {
   }
 
   drawOutputLabels(): void {
-    this.neuronCoords[this.neuronCoords.length - 1].forEach((coord, coordIndex) => {
-      this.context.fillStyle = 'white';
-      this.context.font = '100px Arial';
-      this.context.textAlign = 'center';
+    this.neuronCoords[this.neuronCoords.length - 1].forEach(
+      (coord, coordIndex) => {
+        this.context.fillStyle = 'white';
+        this.context.font = '100px Arial';
+        this.context.textAlign = 'center';
 
-      if (!this.mnistService.usingFashionMNIST) {
-        this.context.fillText(coordIndex.toString(), coord[0], coord[1] + 35);
-      } else {
-        this.context.fillText(FASHION_LABELS[coordIndex], coord[0] + FASHION_OUTPUT_WIDTH / 2, coord[1] + 35);
+        if (!this.mnistService.usingFashionMNIST) {
+          this.context.fillText(coordIndex.toString(), coord[0], coord[1] + 35);
+        } else {
+          this.context.fillText(
+            FASHION_LABELS[coordIndex],
+            coord[0] + FASHION_OUTPUT_WIDTH / 2,
+            coord[1] + 35
+          );
+        }
       }
-    });
+    );
   }
 
   drawCurrentMNISTImage(): void {
@@ -131,27 +159,52 @@ export class NetworkVisualComponent implements OnInit {
     this.context.closePath();
     for (let px = 0; px < this.currentImage.length; px++) {
       const intensity = this.currentImage[px];
-      this.context.fillStyle = 'rgb(' + intensity + ',' + intensity + ',' + intensity + ')';
-      this.context.fillRect(118 + (px % 28) * 13,
-        818 + Math.floor(px / 28) * 13, 13, 13);
+      this.context.fillStyle =
+        'rgb(' + intensity + ',' + intensity + ',' + intensity + ')';
+      this.context.fillRect(
+        118 + (px % 28) * 13,
+        818 + Math.floor(px / 28) * 13,
+        13,
+        13
+      );
     }
   }
 
   drawWeights(): void {
     for (let layerNo = 0; layerNo < this.neuronCoords.length - 1; layerNo++) {
-      const weights = this.neuralNetworkService.network.layers[layerNo + 1].weights;
+      const weights = this.neuralNetworkService.network.layers[layerNo + 1]
+        .weights;
       const max = math.max(weights);
       const min = math.min(weights);
-      for (let neuron = 0; neuron < this.neuronCoords[layerNo].length; neuron++) {
-        for (let neuronNext = 0; neuronNext < this.neuronCoords[layerNo + 1].length; neuronNext++) {
-          const percent = (layerNo !== 0) ? (weights[neuronNext][neuron] - min) / (max - min) : 0;
-          this.context.strokeStyle = this.getColor(WEIGHT_LOW, WEIGHT_HIGH, percent);
+      for (
+        let neuron = 0;
+        neuron < this.neuronCoords[layerNo].length;
+        neuron++
+      ) {
+        for (
+          let neuronNext = 0;
+          neuronNext < this.neuronCoords[layerNo + 1].length;
+          neuronNext++
+        ) {
+          const percent =
+            layerNo !== 0
+              ? (weights[neuronNext][neuron] - min) / (max - min)
+              : 0;
+          this.context.strokeStyle = this.getColor(
+            WEIGHT_LOW,
+            WEIGHT_HIGH,
+            percent
+          );
           this.context.lineWidth = WEIGHT_SIZE;
           this.context.beginPath();
-          this.context.moveTo(this.neuronCoords[layerNo][neuron][0],
-            this.neuronCoords[layerNo][neuron][1]);
-          this.context.lineTo(this.neuronCoords[layerNo + 1][neuronNext][0],
-            this.neuronCoords[layerNo + 1][neuronNext][1]);
+          this.context.moveTo(
+            this.neuronCoords[layerNo][neuron][0],
+            this.neuronCoords[layerNo][neuron][1]
+          );
+          this.context.lineTo(
+            this.neuronCoords[layerNo + 1][neuronNext][0],
+            this.neuronCoords[layerNo + 1][neuronNext][1]
+          );
           this.context.stroke();
           this.context.closePath();
         }
@@ -160,11 +213,16 @@ export class NetworkVisualComponent implements OnInit {
   }
 
   getNeuronRadius(neuronCount: number): number {
-    return (this.canvas.height - PADDING * (neuronCount - 1)) / (neuronCount * 2);
+    return (
+      (this.canvas.height - PADDING * (neuronCount - 1)) / (neuronCount * 2)
+    );
   }
 
   getColor(colorOff: number[], colorOn: number[], percent: number): string {
-    const color = math.add(colorOff, math.multiply(math.subtract(colorOn, colorOff), percent));
+    const color = math.add(
+      colorOff,
+      math.multiply(math.subtract(colorOn, colorOff), percent)
+    );
     return 'rgb(' + color[0] + ',' + color[1] + ',' + color[2] + ')';
   }
 }

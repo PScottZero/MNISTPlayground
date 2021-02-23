@@ -1,10 +1,10 @@
-import {Component} from '@angular/core';
-import {NeuralNetworkService} from '../../../services/neural-network.service';
+import { Component } from '@angular/core';
+import { NeuralNetworkService } from '../../../services/neural-network.service';
 
 @Component({
   selector: 'app-switch',
   templateUrl: './switch.component.html',
-  styleUrls: ['./switch.component.scss']
+  styleUrls: ['./switch.component.scss'],
 })
 export class SwitchComponent {
   constructor(private neuralNetworkService: NeuralNetworkService) {}
@@ -25,6 +25,6 @@ export class SwitchComponent {
   }
 
   getSelectedImage(): string {
-    return (this.usingFashionMNIST()) ? 'fashion-mnist' : 'digit-mnist';
+    return this.usingFashionMNIST() ? 'fashion-mnist' : 'digit-mnist';
   }
 }

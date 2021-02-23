@@ -1,8 +1,8 @@
-import {EventEmitter, Injectable} from '@angular/core';
-import {MnistService} from './mnist.service';
-import {MessageService} from './message.service';
-import {NeuralNetwork} from '../classes/NeuralNetwork';
-import {math} from '../classes/mathjs';
+import { EventEmitter, Injectable } from '@angular/core';
+import { MnistService } from './mnist.service';
+import { MessageService } from './message.service';
+import { NeuralNetwork } from '../classes/NeuralNetwork';
+import { math } from '../classes/mathjs';
 
 const INPUT_SIZE = 784;
 const OUTPUT_SIZE = 10;
@@ -13,7 +13,7 @@ const REDRAW_COUNT = 10;
 const DELAY = 1;
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class NeuralNetworkService {
   network: NeuralNetwork;
@@ -22,16 +22,27 @@ export class NeuralNetworkService {
   sendMNISTImage: EventEmitter<number[]>;
   updateNetworkVisual: EventEmitter<void>;
 
-  constructor(private mnistService: MnistService, private messageService: MessageService) {
+  constructor(
+    private mnistService: MnistService,
+    private messageService: MessageService
+  ) {
     this.updateNetworkVisual = new EventEmitter<void>();
     this.sendMNISTImage = new EventEmitter<number[]>();
-    this.network = new NeuralNetwork(DEFAULT_SIZE, DEFAULT_EPOCH_COUNT, DEFAULT_LEARNING_RATE);
+    this.network = new NeuralNetwork(
+      DEFAULT_SIZE,
+      DEFAULT_EPOCH_COUNT,
+      DEFAULT_LEARNING_RATE
+    );
     this.isTraining = false;
     this.totalCompleted = 0;
   }
 
   toggleMode(): void {
-    this.network = new NeuralNetwork(this.network.size, this.network.epochCount, this.network.eta);
+    this.network = new NeuralNetwork(
+      this.network.size,
+      this.network.epochCount,
+      this.network.eta
+    );
     this.mnistService.usingFashionMNIST = !this.mnistService.usingFashionMNIST;
   }
 
@@ -41,13 +52,17 @@ export class NeuralNetworkService {
 
   async trainNetwork(): Promise<void> {
     this.totalCompleted = 0;
-    for (let epochNo = 0; epochNo < this.network.epochCount; epochNo++) {
+    epochLoop: for (
+      let epochNo = 0;
+      epochNo < this.network.epochCount;
+      epochNo++
+    ) {
       this.mnistService.shuffle();
       let completed = 0;
       let correct = 0;
       for (const image of this.mnistService.getTrainData()) {
         this.forwardPropagation(image.getImage());
-        correct += (this.checkCorrect(image.getLabel())) ? 1 : 0;
+        correct += this.checkCorrect(image.getLabel()) ? 1 : 0;
         this.backPropagation(image.getLabel());
         this.updateNetwork();
         if (completed % REDRAW_COUNT === 0) {
@@ -55,8 +70,16 @@ export class NeuralNetworkService {
         }
         completed++;
         this.totalCompleted++;
-        this.messageService.setEpochMessage(epochNo + 1, this.network.epochCount,
-          this.getAccuracy(correct, completed), completed, this.mnistService.getTrainData().length);
+        this.messageService.setEpochMessage(
+          epochNo + 1,
+          this.network.epochCount,
+          this.getAccuracy(correct, completed),
+          completed,
+          this.mnistService.getTrainData().length
+        );
+        if (!this.isTraining) {
+          break epochLoop;
+        }
       }
     }
   }
@@ -73,8 +96,14 @@ export class NeuralNetworkService {
       completed++;
       this.totalCompleted++;
       this.network.accuracy = this.getAccuracy(correct, completed);
-      this.messageService.setTrainingMessage(this.network.accuracy, completed,
-        this.mnistService.getTestData().length);
+      this.messageService.setTrainingMessage(
+        this.network.accuracy,
+        completed,
+        this.mnistService.getTestData().length
+      );
+      if (!this.isTraining) {
+        break;
+      }
     }
     this.totalCompleted = 0;
   }
@@ -119,17 +148,19 @@ export class NeuralNetworkService {
   }
 
   getProgress(): number {
-    const total = (this.mnistService.getTrainData().length * this.network.epochCount) +
+    const total =
+      this.mnistService.getTrainData().length * this.network.epochCount +
       this.mnistService.getTestData().length;
     return (this.totalCompleted / total) * 100;
   }
 
   getGuess(): number {
-    const outerLayer = this.network.layers[this.network.layers.length - 1].activValues;
+    const outerLayer = this.network.layers[this.network.layers.length - 1]
+      .activValues;
     return outerLayer.indexOf(math.max(outerLayer));
   }
 
   delay(ms: number): any {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 }

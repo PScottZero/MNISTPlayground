@@ -1,5 +1,5 @@
-import {create, all} from 'mathjs';
+import { create, all } from 'mathjs';
 
 export const math = create(all, {
-  matrix: 'Array'
+  matrix: 'Array',
 });

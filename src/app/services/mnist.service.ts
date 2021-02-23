@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import {MNISTImage} from '../classes/MNISTImage';
-import {HttpClient} from '@angular/common/http';
-import {Observable} from 'rxjs';
+import { MNISTImage } from '../classes/MNISTImage';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 import * as math from 'mathjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class MnistService {
   digitTrain: MNISTImage[];
@@ -16,28 +16,28 @@ export class MnistService {
 
   constructor(private http: HttpClient) {
     this.loadData('assets/mnist/mnist_train_reduced.csv').subscribe(
-      csv => this.digitTrain = this.parseCsv(csv)
+      (csv) => (this.digitTrain = this.parseCsv(csv))
     );
     this.loadData('assets/mnist/mnist_test_reduced.csv').subscribe(
-      csv => this.digitTest = this.parseCsv(csv)
+      (csv) => (this.digitTest = this.parseCsv(csv))
     );
     this.loadData('assets/mnist/fashion-mnist_train_reduced.csv').subscribe(
-      csv => this.fashionTrain = this.parseCsv(csv)
+      (csv) => (this.fashionTrain = this.parseCsv(csv))
     );
     this.loadData('assets/mnist/fashion-mnist_test_reduced.csv').subscribe(
-      csv => this.fashionTest = this.parseCsv(csv)
+      (csv) => (this.fashionTest = this.parseCsv(csv))
     );
     this.usingFashionMNIST = false;
   }
 
   loadData(dir: string): Observable<string> {
-    return this.http.get(dir, {responseType: 'text'});
+    return this.http.get(dir, { responseType: 'text' });
   }
 
   parseCsv(csv: string): MNISTImage[] {
     const lines = csv.split('\n');
     lines.pop();
-    return Array.from(lines, line => new MNISTImage(line.split(',')));
+    return Array.from(lines, (line) => new MNISTImage(line.split(',')));
   }
 
   getTrainData(): MNISTImage[] {
