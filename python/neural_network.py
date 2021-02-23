@@ -29,8 +29,11 @@ class MNISTNeuralNetwork:
                 layer.calculate()
 
     def __back_propagation(self, expected_value):
-        expected = np.zeros(10)
-        expected[expected_value] = 1
+        if expected_value != -1:
+            expected = np.zeros(10)
+            expected[expected_value] = 1
+        else:
+            expected = [0.1] * 10
         for layer in reversed(self.layers):
             if layer.prev_layer != None:
                 layer.calculate_gradient(expected)
@@ -41,7 +44,10 @@ class MNISTNeuralNetwork:
                 layer.update(self.eta)
 
     def __check_correct(self, label):
-        return label == np.argmax(self.layers[-1].activ_values)
+        if label != -1:
+            return label == np.argmax(self.layers[-1].activ_values)
+        else:
+            return True
 
     def train(self, mnist_data):
         for epoch_no in range(self.epoch_count):

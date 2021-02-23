@@ -6,5 +6,3 @@ for line in mnist_file.readlines():
     if counts[int(line[0])] < 1000:
         output_file.writelines(line)
         counts[int(line[0])] += 1
-
-print(counts)

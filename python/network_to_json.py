@@ -1,9 +1,12 @@
 import numpy as np
 import sys
 
-def network_to_json(network):
+def network_to_json(network, use_fashion):
     np.set_printoptions(threshold=sys.maxsize)
-    file = open(f'mnist-fashion-{int(network.accuracy)}.json', 'w')
+    if use_fashion:
+        file = open(f'mnist-fashion-{int(network.accuracy)}.json', 'w')
+    else:
+        file = open(f'mnist-digit-{int(network.accuracy)}.json', 'w')
     file.write('{"layers":[')
     for layer_no in range(0, len(network.layers)):
         if layer_no != 0:
