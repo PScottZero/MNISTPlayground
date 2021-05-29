@@ -60,6 +60,7 @@ export class DrawToolComponent implements OnInit {
       } else {
         this.guess = this.neuralNetworkService.getGuess().toString();
       }
+      this.neuralNetworkService.sendMNISTImage.emit(imageArray);
     }
   }
 
